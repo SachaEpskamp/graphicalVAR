@@ -1,0 +1,12 @@
+Package: graphicalVAR
+Type: Package
+Title: Graphical VAR for experience sampling data
+Version: 0.1
+Date: 2015-03-05
+Author: Sacha Epskamp
+Maintainer: Sacha Epskamp <mail@sachaepskamp.com>
+Description: More about what it does (maybe more than one line)
+License: GPL (>= 2)
+Imports: Rcpp (>= 0.11.3)
+LinkingTo: Rcpp, RcppArmadillo
+Imports: glasso, glmnet, mvtnorm
