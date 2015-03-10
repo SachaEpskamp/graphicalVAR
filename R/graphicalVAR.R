@@ -15,7 +15,6 @@ graphicalVAR <-
 function(
   data, # A n by p data frame containing repeated measures
   nLambda = 50, # Either single value or vector of two corresponding to c(kappa, beta)
-  family = "gaussian",
   verbose = TRUE,
   gamma = 0.5,
   lambda_beta,
@@ -89,6 +88,13 @@ function(
   Results$PDC <- computePDC(Results$beta, Results$kappa)  
 
   Results$path <- lambdas
+  Results$labels <- colnames(data)
+
+  colnames(Results$beta) <- rownames(Results$beta) <- colnames(Results$kappa) <- rownames(Results$kappa) <-
+  colnames(Results$PCC) <- rownames(Results$PCC) <- colnames(Results$PDC) <- rownames(Results$PDC) <-
+  Results$labels
+Results$gamma <- gamma
+
   class(Results) <- "graphicalVAR"
   
   return(Results)

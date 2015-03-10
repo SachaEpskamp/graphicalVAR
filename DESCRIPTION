@@ -7,6 +7,6 @@ Author: Sacha Epskamp
 Maintainer: Sacha Epskamp <mail@sachaepskamp.com>
 Description: More about what it does (maybe more than one line)
 License: GPL (>= 2)
-Imports: Rcpp (>= 0.11.3)
+Suggests: SparseTSCGM
 LinkingTo: Rcpp, RcppArmadillo
-Imports: glasso, glmnet, mvtnorm
+Imports: Rcpp (>= 0.11.3), Matrix, glasso, glmnet, mvtnorm, qgraph
