@@ -46,7 +46,7 @@ plot.graphicalVAR <- function(x, include = c("PCC","PDC"), repulsion = 1, horizo
   }
   
   if (sameLayout & all(c("PCC","PDC") %in% include)){
-    Layout <- qgraph::averageLayout(x$PCC, x$PDC, repulsion=repulsion)
+    Layout <- qgraph::averageLayout(as.matrix(x$PCC), as.matrix(x$PDC), repulsion=repulsion)
   }
   
   Res <- list()
