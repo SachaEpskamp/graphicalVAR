@@ -8,7 +8,8 @@ Estimate the graphical VAR model.
 Estimates the graphical VAR (Wild et al., 2010) model through LASSO estimation coupled with extended Bayesian information criterion for choosing the optimal tuning parameters. The estimation procedure is outlined by Rothman, Levina and Zhu (2010) and is further described by Abegaz and Wit (2013). The procedure here is based on the work done in the R package SparseTSCGM (Abegaz and Wit, 2014).
 }
 \usage{
-graphicalVAR(data, nLambda = 50, verbose = TRUE, gamma = 0.5, lambda_beta, lambda_kappa)
+graphicalVAR(data, nLambda = 50, verbose = TRUE, gamma = 0.5, lambda_beta, lambda_kappa, 
+                  maxit.in = 100, maxit.out = 100)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -30,6 +31,12 @@ An optional vector of lambda_beta values to test.
   \item{lambda_kappa}{
 An optional vector of lambda_kappa values to test.
 }
+  \item{maxit.in}{
+Maximum number of iterations in the inner loop (computing beta)
+}
+  \item{maxit.out}{
+  Maximum number of iterations in the outer loop
+  }
 }
 \details{
 Let y_t denote the vector of responses of a subject on a set of items on time point t. The graphical VAR model, using only one lag, is defined as follows:

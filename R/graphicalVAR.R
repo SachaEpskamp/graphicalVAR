@@ -18,7 +18,7 @@ function(
   verbose = TRUE,
   gamma = 0.5,
   lambda_beta,
-  lambda_kappa
+  lambda_kappa, maxit.in = 100, maxit.out = 100
   ){
   
   # Check input:
@@ -65,7 +65,7 @@ function(
     pb <- txtProgressBar(0, nrow(lambdas), style = 3) 
   }
   for (i in seq_len(nrow(lambdas))){
-    Estimates[[i]] <- Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i], gamma=gamma)
+    Estimates[[i]] <- Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i], gamma=gamma,maxit.in=maxit.in, maxit.out = maxit.out)
    if (verbose){
      setTxtProgressBar(pb, i)
    } 

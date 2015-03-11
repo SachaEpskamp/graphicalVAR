@@ -1,5 +1,5 @@
 Rothmana <-
-function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5){
+function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit.in = 100, maxit.out = 100){
   # Algorithm 2 of Rothmana, Levinaa & Ji Zhua
   
   Nvar <- ncol(X)
@@ -16,9 +16,14 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5){
     it <- it + 1
     kappa <- Kappa(beta, X, Y, lambda_kappa)
     beta_old <- beta
-    beta <- Beta_C(kappa, beta, X, Y, lambda_beta, convergence) 
+    beta <- Beta_C(kappa, beta, X, Y, lambda_beta, convergence, maxit.in) 
     
     if (sum(abs(beta - beta_old)) < (convergence * sum(abs(beta_ridge)))){
+      break
+    }
+    
+    if (it > maxit.out){
+      warning("Model did NOT converge in outer loop")
       break
     }
   }
@@ -42,5 +47,6 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5){
   
   EBIC <-  -2*LLk + (log(n))*(pdO +pdB) + (pdO  + pdB)*4*gamma*log(2*Nvar)
   
-  return(list(beta=beta, kappa=kappa, EBIC = EBIC))
+  ### TRANSPOSE BETA!!!
+  return(list(beta=t(beta), kappa=kappa, EBIC = EBIC))
 }

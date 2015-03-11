@@ -67,7 +67,7 @@ NumericMatrix beta_ridge_C(NumericMatrix X, NumericMatrix Y, double lambda_beta)
 // Compute Beta given Kappa:
 // [[Rcpp::export]]
 NumericMatrix Beta_C(NumericMatrix kappa, NumericMatrix beta, NumericMatrix X, NumericMatrix Y, 
-double lambda_beta, double convergence){
+double lambda_beta, double convergence, int maxit){
   
   int n = X.nrow(), p = X.ncol();
   
@@ -94,7 +94,7 @@ double lambda_beta, double convergence){
   double criterium;
   
   NumericMatrix beta_new = duplicateMat(beta);
-  
+  int it = 0;
   // Store beta:
   do{
     NumericMatrix beta_old = duplicateMat(beta_new);
@@ -119,8 +119,12 @@ double lambda_beta, double convergence){
       }
     }
     
-    
-  } while (criterium > (convergence * ridgecriterium));
+    it++;
+  } while (it < maxit & criterium > (convergence * ridgecriterium));
+  
+  if (it >= maxit){
+    Rcpp::Rcout << "\nModel did NOT converge in inner loop";
+  }
   
   return(beta_new);
 }

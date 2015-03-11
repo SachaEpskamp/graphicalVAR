@@ -24,8 +24,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // Beta_C
-NumericMatrix Beta_C(NumericMatrix kappa, NumericMatrix beta, NumericMatrix X, NumericMatrix Y, double lambda_beta, double convergence);
-RcppExport SEXP graphicalVAR_Beta_C(SEXP kappaSEXP, SEXP betaSEXP, SEXP XSEXP, SEXP YSEXP, SEXP lambda_betaSEXP, SEXP convergenceSEXP) {
+NumericMatrix Beta_C(NumericMatrix kappa, NumericMatrix beta, NumericMatrix X, NumericMatrix Y, double lambda_beta, double convergence, int maxit);
+RcppExport SEXP graphicalVAR_Beta_C(SEXP kappaSEXP, SEXP betaSEXP, SEXP XSEXP, SEXP YSEXP, SEXP lambda_betaSEXP, SEXP convergenceSEXP, SEXP maxitSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -36,7 +36,8 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP );
         Rcpp::traits::input_parameter< double >::type lambda_beta(lambda_betaSEXP );
         Rcpp::traits::input_parameter< double >::type convergence(convergenceSEXP );
-        NumericMatrix __result = Beta_C(kappa, beta, X, Y, lambda_beta, convergence);
+        Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP );
+        NumericMatrix __result = Beta_C(kappa, beta, X, Y, lambda_beta, convergence, maxit);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
