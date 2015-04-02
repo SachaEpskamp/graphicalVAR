@@ -10,72 +10,56 @@ using namespace Rcpp;
 NumericMatrix beta_ridge_C(NumericMatrix X, NumericMatrix Y, double lambda_beta);
 RcppExport SEXP graphicalVAR_beta_ridge_C(SEXP XSEXP, SEXP YSEXP, SEXP lambda_betaSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP );
-        Rcpp::traits::input_parameter< double >::type lambda_beta(lambda_betaSEXP );
-        NumericMatrix __result = beta_ridge_C(X, Y, lambda_beta);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda_beta(lambda_betaSEXP);
+    __result = Rcpp::wrap(beta_ridge_C(X, Y, lambda_beta));
+    return __result;
 END_RCPP
 }
 // Beta_C
 NumericMatrix Beta_C(NumericMatrix kappa, NumericMatrix beta, NumericMatrix X, NumericMatrix Y, double lambda_beta, double convergence, int maxit);
 RcppExport SEXP graphicalVAR_Beta_C(SEXP kappaSEXP, SEXP betaSEXP, SEXP XSEXP, SEXP YSEXP, SEXP lambda_betaSEXP, SEXP convergenceSEXP, SEXP maxitSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericMatrix >::type kappa(kappaSEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP );
-        Rcpp::traits::input_parameter< double >::type lambda_beta(lambda_betaSEXP );
-        Rcpp::traits::input_parameter< double >::type convergence(convergenceSEXP );
-        Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP );
-        NumericMatrix __result = Beta_C(kappa, beta, X, Y, lambda_beta, convergence, maxit);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda_beta(lambda_betaSEXP);
+    Rcpp::traits::input_parameter< double >::type convergence(convergenceSEXP);
+    Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
+    __result = Rcpp::wrap(Beta_C(kappa, beta, X, Y, lambda_beta, convergence, maxit));
+    return __result;
 END_RCPP
 }
 // VAR_logLik_C
 double VAR_logLik_C(NumericMatrix X, NumericMatrix Y, NumericMatrix kappa, NumericMatrix beta);
 RcppExport SEXP graphicalVAR_VAR_logLik_C(SEXP XSEXP, SEXP YSEXP, SEXP kappaSEXP, SEXP betaSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type kappa(kappaSEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP );
-        double __result = VAR_logLik_C(X, Y, kappa, beta);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type beta(betaSEXP);
+    __result = Rcpp::wrap(VAR_logLik_C(X, Y, kappa, beta));
+    return __result;
 END_RCPP
 }
 // LogLik_and_BIC
 List LogLik_and_BIC(NumericMatrix X, NumericMatrix Y, List estimates);
 RcppExport SEXP graphicalVAR_LogLik_and_BIC(SEXP XSEXP, SEXP YSEXP, SEXP estimatesSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP );
-        Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP );
-        Rcpp::traits::input_parameter< List >::type estimates(estimatesSEXP );
-        List __result = LogLik_and_BIC(X, Y, estimates);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< List >::type estimates(estimatesSEXP);
+    __result = Rcpp::wrap(LogLik_and_BIC(X, Y, estimates));
+    return __result;
 END_RCPP
 }
