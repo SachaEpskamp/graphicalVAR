@@ -72,7 +72,7 @@ plot.graphicalVAR <- function(x, include = c("PCC","PDC"), repulsion = 1, horizo
       }
       
       if (titles){
-        qtitle("Partial Directed Correlation")
+        qtitle("Partial Directed Correlations")
       }
     }
   }

@@ -193,7 +193,7 @@ List LogLik_and_BIC(NumericMatrix X, NumericMatrix Y, List estimates){
       }
     }
     
-    BICs[k] = -2 * LogLiks[k] + nPar * log(n);
+    BICs[k] = -2 * LogLiks[k] + nPar * log((double)n);
   }
   
   List Results;

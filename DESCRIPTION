@@ -1,8 +1,8 @@
 Package: graphicalVAR
 Type: Package
 Title: Graphical VAR for Experience Sampling Data
-Version: 0.1.1
-Date: 2015-03-05
+Version: 0.1.2
+Date: 2015-03-12
 Author: Sacha Epskamp
 Maintainer: Sacha Epskamp <mail@sachaepskamp.com>
 Description: Estimates within and between time point interactions in experience sampling data, using the Graphical VAR model in combination with LASSO and EBIC.
