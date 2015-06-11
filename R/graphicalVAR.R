@@ -35,7 +35,7 @@ function(
   Ntime <- nrow(data)
 
   # Center data:
-  data <- scale(data)
+  data <- scale(data, TRUE, FALSE)
   
   # Compute current and lagged data:
   data_c <- data[-1,,drop=FALSE]
