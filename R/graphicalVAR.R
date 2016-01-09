@@ -17,8 +17,10 @@ function(
   nLambda = 50, # Either single value or vector of two corresponding to c(kappa, beta)
   verbose = TRUE,
   gamma = 0.5,
+  scale = TRUE,
   lambda_beta,
-  lambda_kappa, maxit.in = 100, maxit.out = 100
+  lambda_kappa, maxit.in = 100, maxit.out = 100,
+  deleteMissings = TRUE
   ){
   
   # Check input:
@@ -35,11 +37,28 @@ function(
   Ntime <- nrow(data)
 
   # Center data:
-  data <- scale(data, TRUE, FALSE)
+  data <- scale(data, TRUE, scale)
   
   # Compute current and lagged data:
   data_c <- data[-1,,drop=FALSE]
   data_l <- data[-nrow(data),,drop=FALSE]
+  
+  # Delete missing rows:
+  if (any(is.na(data_c)) || any(is.na(data_l))){
+ 
+    if (deleteMissings){
+      
+      warnings("Data with missings deleted")
+      
+      missing <- rowSums(is.na(data_c)) > 0 | rowSums(is.na(data_l)) > 0
+      data_c <- data_c[!missing,]
+      data_l <- data_l[!missing,]
+      
+    } else {
+      stop("Missing data not supported")
+    }
+    
+  }
   
   # Generate lambdas (from SparseTSCGM package):
   if (missing(lambda_beta) | missing(lambda_kappa)){
@@ -73,6 +92,7 @@ function(
   if (verbose){
     close(pb)
   }
+
 #   
 #   logandbic <- LogLik_and_BIC(data_l, data_c, Estimates)
 #   lambdas$bic <- logandbic$BIC

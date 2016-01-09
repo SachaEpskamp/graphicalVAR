@@ -5,8 +5,8 @@ beta_ridge_C <- function(X, Y, lambda_beta) {
     .Call('graphicalVAR_beta_ridge_C', PACKAGE = 'graphicalVAR', X, Y, lambda_beta)
 }
 
-Beta_C <- function(kappa, beta, X, Y, lambda_beta, convergence, maxit) {
-    .Call('graphicalVAR_Beta_C', PACKAGE = 'graphicalVAR', kappa, beta, X, Y, lambda_beta, convergence, maxit)
+Beta_C <- function(kappa, beta, X, Y, lambda_beta, lambda_beta_mat, convergence, maxit) {
+    .Call('graphicalVAR_Beta_C', PACKAGE = 'graphicalVAR', kappa, beta, X, Y, lambda_beta, lambda_beta_mat, convergence, maxit)
 }
 
 VAR_logLik_C <- function(X, Y, kappa, beta) {

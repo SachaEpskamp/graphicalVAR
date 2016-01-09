@@ -45,17 +45,17 @@ double absfun(double x){
 // [[Rcpp::export]]
 NumericMatrix beta_ridge_C(NumericMatrix X, NumericMatrix Y, double lambda_beta){
   
-  int n = X.nrow(), p = X.ncol();
+  int n = X.nrow(), nX = X.ncol(), nY = Y.ncol();
   // Create lambda identity:
-  NumericMatrix lambdaIden(p,p);
+  NumericMatrix lambdaIden(nX,nX);
   std::fill(lambdaIden.begin(), lambdaIden.end(), 0.0);
-  for (int i=0;i<p;i++){
+  for (int i=0;i<nX;i++){
     lambdaIden(i,i) = lambda_beta;
   }
   
-  arma::mat X_(X.begin(), n, p, false);       // reuses memory and avoids extra copy
-  arma::mat Y_(Y.begin(), n, p, false);       // reuses memory and avoids extra copy
-  arma::mat lambdaIden_(lambdaIden.begin(), p, p, false);       // reuses memory and avoids extra copy
+  arma::mat X_(X.begin(), n, nX, false);       // reuses memory and avoids extra copy
+  arma::mat Y_(Y.begin(), n, nY, false);       // reuses memory and avoids extra copy
+  arma::mat lambdaIden_(lambdaIden.begin(), nX, nX, false);       // reuses memory and avoids extra copy
   
   // Compute ridge beta:
   arma::mat beta_ridge_ = inv(trans(X_) * X_ + lambdaIden_) * trans(X_) * Y_;
@@ -67,14 +67,14 @@ NumericMatrix beta_ridge_C(NumericMatrix X, NumericMatrix Y, double lambda_beta)
 // Compute Beta given Kappa:
 // [[Rcpp::export]]
 NumericMatrix Beta_C(NumericMatrix kappa, NumericMatrix beta, NumericMatrix X, NumericMatrix Y, 
-double lambda_beta, double convergence, int maxit){
+double lambda_beta, NumericMatrix lambda_beta_mat, double convergence, int maxit){
   
-  int n = X.nrow(), p = X.ncol();
+  int n = X.nrow(), nX = X.ncol(), nY = Y.ncol();
   
   // Convert matrices without reusing memory:
-  arma::mat X_(X.begin(), n, p, false);       // reuses memory and avoids extra copy
-  arma::mat Y_(Y.begin(), n, p, false);       // reuses memory and avoids extra copy
-  arma::mat kappa_(kappa.begin(), p, p, false);       // reuses memory and avoids extra copy
+  arma::mat X_(X.begin(), n, nX, false);       // reuses memory and avoids extra copy
+  arma::mat Y_(Y.begin(), n, nY, false);       // reuses memory and avoids extra copy
+  arma::mat kappa_(kappa.begin(), nY, nY, false);       // reuses memory and avoids extra copy
   
   // new matrices:
   arma::mat S_ = trans(X_) * X_;
@@ -108,7 +108,7 @@ double lambda_beta, double convergence, int maxit){
             u += beta_new(j, k) * S(r, j) * kappa(k, c);
           }
         }
-        beta_new(r,c) = signfun(beta_new(r,c) + (H(r,c) - u)/(S(r,r) * kappa(c,c))) * noneg(absfun(beta_new(r,c) + (H(r,c) - u)/(S(r,r)*kappa(c,c))) - n*lambda_beta/(S(r,r)*kappa(c,c)));
+        beta_new(r,c) = signfun(beta_new(r,c) + (H(r,c) - u)/(S(r,r) * kappa(c,c))) * noneg(absfun(beta_new(r,c) + (H(r,c) - u)/(S(r,r)*kappa(c,c))) - n*lambda_beta_mat(r,c)/(S(r,r)*kappa(c,c)));
       }
     }
     
@@ -136,13 +136,13 @@ double VAR_logLik_C(NumericMatrix X, NumericMatrix Y, NumericMatrix kappa, Numer
   // http://webspace.qmul.ac.uk/aferreira/lect2-var2_handout.pdf
   
   int T = X.nrow();
-  int m = X.ncol();
+  int nX = X.ncol(), nY = Y.ncol();
   
   // Convert matrices without reusing memory:
-  arma::mat X_arma(X.begin(), T, m, false);      
-  arma::mat Y_arma(Y.begin(), T, m, false);      
-  arma::mat kappa_arma(kappa.begin(), m, m, false);     
-  arma::mat beta_arma(beta.begin(), m, m, false);   
+  arma::mat X_arma(X.begin(), T, nX, false);      
+  arma::mat Y_arma(Y.begin(), T, nY, false);      
+  arma::mat kappa_arma(kappa.begin(), nY, nY, false);     
+  arma::mat beta_arma(beta.begin(), nY, nX, false);   
   
   
   
@@ -152,7 +152,7 @@ double VAR_logLik_C(NumericMatrix X, NumericMatrix Y, NumericMatrix kappa, Numer
     sum += foo[0];
   }
   
-  double res =  -((double)T * (double)m/2) * log(2*M_PI) + ((double)T/2) * log(det(kappa_arma)) - 0.5 * sum;
+  double res =  -((double)T * (double)nY/2) * log(2*M_PI) + ((double)T/2) * log(det(kappa_arma)) - 0.5 * sum;
   
   return(res);
 }
@@ -171,13 +171,13 @@ List LogLik_and_BIC(NumericMatrix X, NumericMatrix Y, List estimates){
     List el = estimates[k];
     NumericMatrix kappa = el["kappa"];
     NumericMatrix beta = el["beta"];
-    int p = kappa.nrow();
+
     LogLiks[k] = VAR_logLik_C(X, Y, kappa, beta);
     
     // Number of parameters:
     int nPar = 0;
-    for (int i=0; i<p; i++){
-      for (int j=i; j<p; j++){
+    for (int i=0; i<kappa.nrow(); i++){
+      for (int j=i; j<kappa.ncol(); j++){
         if (i != j){
           if (kappa(i,j) != 0){
             nPar++;
@@ -185,8 +185,8 @@ List LogLik_and_BIC(NumericMatrix X, NumericMatrix Y, List estimates){
         }
       }
     }
-    for (int i=0; i<p; i++){
-      for (int j=0; j<p; j++){
+    for (int i=0; i<beta.nrow(); i++){
+      for (int j=0; j<beta.ncol(); j++){
         if (beta(i,j) != 0){
           nPar++;
         }

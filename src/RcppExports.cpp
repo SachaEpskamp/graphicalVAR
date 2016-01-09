@@ -20,8 +20,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // Beta_C
-NumericMatrix Beta_C(NumericMatrix kappa, NumericMatrix beta, NumericMatrix X, NumericMatrix Y, double lambda_beta, double convergence, int maxit);
-RcppExport SEXP graphicalVAR_Beta_C(SEXP kappaSEXP, SEXP betaSEXP, SEXP XSEXP, SEXP YSEXP, SEXP lambda_betaSEXP, SEXP convergenceSEXP, SEXP maxitSEXP) {
+NumericMatrix Beta_C(NumericMatrix kappa, NumericMatrix beta, NumericMatrix X, NumericMatrix Y, double lambda_beta, NumericMatrix lambda_beta_mat, double convergence, int maxit);
+RcppExport SEXP graphicalVAR_Beta_C(SEXP kappaSEXP, SEXP betaSEXP, SEXP XSEXP, SEXP YSEXP, SEXP lambda_betaSEXP, SEXP lambda_beta_matSEXP, SEXP convergenceSEXP, SEXP maxitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -30,9 +30,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Y(YSEXP);
     Rcpp::traits::input_parameter< double >::type lambda_beta(lambda_betaSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type lambda_beta_mat(lambda_beta_matSEXP);
     Rcpp::traits::input_parameter< double >::type convergence(convergenceSEXP);
     Rcpp::traits::input_parameter< int >::type maxit(maxitSEXP);
-    __result = Rcpp::wrap(Beta_C(kappa, beta, X, Y, lambda_beta, convergence, maxit));
+    __result = Rcpp::wrap(Beta_C(kappa, beta, X, Y, lambda_beta, lambda_beta_mat, convergence, maxit));
     return __result;
 END_RCPP
 }

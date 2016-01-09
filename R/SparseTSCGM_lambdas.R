@@ -48,7 +48,8 @@ function(X, Y, nlambda = 100){
   SS =(yty)/(n*T)
   SS = cov2cor(SS)
   SAs = xty/(n*T)
-  SA = SAs %*% SXi
+ 
+  SA = t(SAs) %*% SXi
   
   lambda <-  lambda.seq(SS=SS,SA=SA, nlambda=nlambda)
   lam1 <- round(lambda$lambda1,3) 

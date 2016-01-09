@@ -1,13 +1,28 @@
 Rothmana <-
-function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit.in = 100, maxit.out = 100){
+function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit.in = 100, maxit.out = 100,
+         penalize.diagonal # if FALSE, penalizes the first diagonal (assumed to be auto regressions), even when ncol(X) != ncol(Y) !
+         ){
   # Algorithm 2 of Rothmana, Levinaa & Ji Zhua
   
-  Nvar <- ncol(X)
+  nY <- ncol(Y)
+  nX <- ncol(X)
+  
+  if (missing(penalize.diagonal)){
+    penalize.diagonal <- nY != nX
+  }
+  
+  lambda_mat <- matrix(lambda_beta,nX, nY)
+  if (!penalize.diagonal){
+    for (i in 1:min(c(nY,nX))){
+      lambda_mat[i,i] <- 0
+    }
+  }
+  
   n <- nrow(X)
   beta_ridge <- beta_ridge_C(X, Y, lambda_beta)
   
   # Starting values:
-  beta <- matrix(0, Nvar, Nvar)  
+  beta <- matrix(0, nX, nY)  
   
   # Algorithm:
   it <- 0
@@ -16,7 +31,7 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit
     it <- it + 1
     kappa <- Kappa(beta, X, Y, lambda_kappa)
     beta_old <- beta
-    beta <- Beta_C(kappa, beta, X, Y, lambda_beta, convergence, maxit.in) 
+    beta <- Beta_C(kappa, beta, X, Y, lambda_beta, lambda_mat, convergence, maxit.in) 
     
     if (sum(abs(beta - beta_old)) < (convergence * sum(abs(beta_ridge)))){
       break
@@ -45,7 +60,7 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit
   LLk <-  (n/2)*(lik1-lik2) 
   LLk0 <-  (n/2)*(-lik2)
   
-  EBIC <-  -2*LLk + (log(n))*(pdO +pdB) + (pdO  + pdB)*4*gamma*log(2*Nvar)
+  EBIC <-  -2*LLk + (log(n))*(pdO +pdB) + (pdO  + pdB)*4*gamma*log(2*nY)
   
   ### TRANSPOSE BETA!!!
   return(list(beta=t(beta), kappa=kappa, EBIC = EBIC))

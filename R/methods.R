@@ -66,9 +66,9 @@ plot.graphicalVAR <- function(x, include = c("PCC","PDC"), repulsion = 1, horizo
     
     if ("PDC" == include[i]){
       if (sameLayout & all(c("PCC","PDC") %in% include)){
-        Res[[i]] <- qgraph::qgraph(x$PDC, layout = Layout, ..., repulsion=repulsion)
+        Res[[i]] <- qgraph::qgraph(x$PDC, layout = Layout, ..., repulsion=repulsion, directed=TRUE)
       } else {
-        Res[[i]] <- qgraph::qgraph(x$PDC, ..., repulsion=repulsion)
+        Res[[i]] <- qgraph::qgraph(x$PDC, ..., repulsion=repulsion, directed=TRUE)
       }
       
       if (titles){
