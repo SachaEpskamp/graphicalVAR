@@ -1,10 +1,10 @@
 SparseTSCGM_lambdas <-
-function(X, Y, nlambda = 100){
+function(X, Y, nlambda = 100, lambda.min.ratio = 0.01){
   # From SparseTSCGM package:
   lambda.seq <- function(SS, SA,nlambda)
   {
     if (length(nlambda)==1) nlambda <- rep(nlambda,2)
-    lambda.min.ratio=0.1
+    # lambda.min.ratio=0.1
     d= dim(SS)[2]
     lambda.max1 = max(max(SS-diag(d)),-min(SS-diag(d)))
     lambda.min1 = lambda.min.ratio*lambda.max1

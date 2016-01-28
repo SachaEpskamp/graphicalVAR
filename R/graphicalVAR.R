@@ -21,7 +21,8 @@ function(
   lambda_beta,
   lambda_kappa, maxit.in = 100, maxit.out = 100,
   deleteMissings = TRUE,
-  penalize.diagonal = TRUE
+  penalize.diagonal = TRUE,
+  lambda.min.ratio = 0.01
   ){
   
   # Check input:
@@ -63,7 +64,7 @@ function(
   
   # Generate lambdas (from SparseTSCGM package):
   if (missing(lambda_beta) | missing(lambda_kappa)){
-    lams <- SparseTSCGM_lambdas(data_l, data_c, nLambda)
+    lams <- SparseTSCGM_lambdas(data_l, data_c, nLambda, lambda.min.ratio=lambda.min.ratio)
     if (missing(lambda_beta)){
       lambda_beta <- lams$lambda_beta
     }
