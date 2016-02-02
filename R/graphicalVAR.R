@@ -86,8 +86,56 @@ function(
     pb <- txtProgressBar(0, nrow(lambdas), style = 3) 
   }
   for (i in seq_len(nrow(lambdas))){
-    Estimates[[i]] <- Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i], gamma=gamma,maxit.in=maxit.in, maxit.out = maxit.out,
-                               penalize.diagonal = penalize.diagonal)
+    if ( lambdas$beta[i] == 0 & lambdas$kappa[i] == 0){
+      # Unregularized!
+#       SigmaHat <- cov(data, use = "pairwise.complete.obs")
+#       L1Hat <- cov(data_l, data_c, use = "pairwise.complete.obs")
+#       beta <- t(solve(SigmaHat) %*% L1Hat)
+#       kappa <- solve(SigmaHat - beta %*% SigmaHat %*% t(beta))
+      X <- data_l
+      Y <- data_c
+      
+      nY <- ncol(Y)
+      nX <- ncol(X)
+      n <- nrow(X)
+      
+      beta <- VARglm(data, family = "gaussian")$graph
+
+      #####
+      ## Compute unconstrained kappa (codes from SparseTSCGM):
+      # ZeroIndex <- which(kappa==0, arr.ind=TRUE) ## Select the path of zeros
+      WS <-  (t(Y)%*%Y - t(t(X)%*%Y) %*% beta - t(beta) %*% t(X)%*%Y + t(beta) %*% t(X)%*%X %*% beta)/(nrow(X))
+
+#         out4 <- suppressWarnings(glasso(WS, rho = 0, trace = FALSE))
+# 
+#       kappa <- out4$wi
+      WS <- (WS + t(WS)) / 2
+      if (any(eigen(WS)$value < 0)) stop("Residual covariances not postive definite")
+      
+      kappa <- solve(WS)
+      
+      kappa <- (kappa + t(kappa)) / 2
+      
+      lik1  = determinant( kappa)$modulus[1]
+      lik2 <- sum(diag( kappa%*%WS))
+      
+      pdO = sum(sum(kappa[upper.tri(kappa,diag=FALSE)] !=0))
+      pdB = sum(sum(beta !=0))
+      
+      LLk <-  (n/2)*(lik1-lik2) 
+      LLk0 <-  (n/2)*(-lik2)
+      
+      EBIC <-  -2*LLk + (log(n))*(pdO +pdB) + (pdO  + pdB)*4*gamma*log(2*nY)
+      
+      #####
+      
+      Estimates[[i]] <- list(beta = t(beta), kappa = kappa, EBIC = EBIC)
+    } else {
+      
+      Estimates[[i]] <- Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i], gamma=gamma,maxit.in=maxit.in, maxit.out = maxit.out,
+                                 penalize.diagonal = penalize.diagonal)  
+    }
+    
    if (verbose){
      setTxtProgressBar(pb, i)
    } 
