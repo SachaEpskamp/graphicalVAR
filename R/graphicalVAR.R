@@ -7,6 +7,9 @@ computePCC <- function(x)
 }
 
 computePDC <- function(beta,kappa){
+  if (ncol(beta) == nrow(beta)+1){
+    beta <- beta[,-1,drop=FALSE]
+  }
   sigma <- solve(kappa)
   t(beta / sqrt(diag(sigma) %o% diag(kappa) + beta^2))
 }
@@ -40,10 +43,15 @@ function(
 
   # Center data:
   data <- scale(data, TRUE, scale)
+#   if (scale){
+#     for (i in 1:ncol(data)) data[,i] <- (data[,i] - mean(data[,i],na.rm=TRUE)) / sd(data[,i],na.rm=TRUE)
+#   } else {
+#     for (i in 1:ncol(data)) data[,i] <- (data[,i] - mean(data[,i],na.rm=TRUE))
+#   }
   
   # Compute current and lagged data:
   data_c <- data[-1,,drop=FALSE]
-  data_l <- data[-nrow(data),,drop=FALSE]
+  data_l <- cbind(1,data[-nrow(data),,drop=FALSE])
   
   # Delete missing rows:
   if (any(is.na(data_c)) || any(is.na(data_l))){
@@ -99,25 +107,28 @@ function(
       nX <- ncol(X)
       n <- nrow(X)
       
-      beta <- VARglm(data, family = "gaussian")$graph
+      beta <- t(Y) %*% X %*% solve(t(X) %*% X)
 
       #####
       ## Compute unconstrained kappa (codes from SparseTSCGM):
       # ZeroIndex <- which(kappa==0, arr.ind=TRUE) ## Select the path of zeros
-      WS <-  (t(Y)%*%Y - t(t(X)%*%Y) %*% beta - t(beta) %*% t(X)%*%Y + t(beta) %*% t(X)%*%X %*% beta)/(nrow(X))
-
+      S <- 1/(nrow(Y)) * (
+        t(Y) %*% Y -
+          t(Y) %*% X %*% t(beta) -
+          beta %*% t(X) %*% Y +
+          beta %*% t(X) %*% X %*% t(beta)
+      )
+      
 #         out4 <- suppressWarnings(glasso(WS, rho = 0, trace = FALSE))
 # 
 #       kappa <- out4$wi
-      WS <- (WS + t(WS)) / 2
-      if (any(eigen(WS)$value < 0)) stop("Residual covariances not postive definite")
-      
-      kappa <- solve(WS)
-      
+      S <- (S + t(S)) / 2
+      if (any(eigen(S)$value < 0)) stop("Residual covariances not postive definite")
+      kappa <- solve(S)
       kappa <- (kappa + t(kappa)) / 2
-      
+
       lik1  = determinant( kappa)$modulus[1]
-      lik2 <- sum(diag( kappa%*%WS))
+      lik2 <- sum(diag( kappa%*%S))
       
       pdO = sum(sum(kappa[upper.tri(kappa,diag=FALSE)] !=0))
       pdB = sum(sum(beta !=0))
@@ -129,7 +140,7 @@ function(
       
       #####
       
-      Estimates[[i]] <- list(beta = t(beta), kappa = kappa, EBIC = EBIC)
+      Estimates[[i]] <- list(beta = beta, kappa = kappa, EBIC = EBIC)
     } else {
       
       Estimates[[i]] <- Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i], gamma=gamma,maxit.in=maxit.in, maxit.out = maxit.out,
