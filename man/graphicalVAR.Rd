@@ -90,25 +90,20 @@ Sacha Epskamp <mail@sachaepskamp.com>
 }
 
 \examples{
-# Real matrices:
-Kappa <- diag(1,3,3)
-Kappa[1,2] <- Kappa[2,1] <- Kappa[2,3] <- Kappa[3,2] <- -0.5
-Beta <- diag(0.4,3,3)
-Beta[1,3] <- -0.5
+# Simulate model:
+Mod <- randomGVARmodel(10)
 
 # Simulate data:
-Data <- graphicalVARsim(100,Beta,Kappa)
+Data <- graphicalVARsim(100,Mod$beta,Mod$kappa)
 
 # Estimate model:
-Res <- graphicalVAR(Data, gamma = 0, nLambda = 20)
+Res <- graphicalVAR(Data, gamma = 0, nLambda = 10)
 
 # Plot results:
-plot(Res)
+layout(t(1:2))
+plot(Mod, "PCC", layout = "circle")
+plot(Res, "PCC", layout = "circle")
 
-# Compare results:
-Beta
-Res$beta
-
-Kappa
-Res$kappa
+plot(Mod, "PDC", layout = "circle")
+plot(Res, "PDC", layout = "circle")
 }

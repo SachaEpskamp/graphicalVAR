@@ -24,8 +24,9 @@ function(
   lambda_beta,
   lambda_kappa, maxit.in = 100, maxit.out = 100,
   deleteMissings = TRUE,
-  penalize.diagonal = TRUE,
-  lambda.min.ratio = 0.01
+  penalize.diagonal = FALSE,
+  lambda_min_kappa = 0.05,
+  lambda_min_beta = 0.05
   ){
   
   # Check input:
@@ -72,7 +73,8 @@ function(
   
   # Generate lambdas (from SparseTSCGM package):
   if (missing(lambda_beta) | missing(lambda_kappa)){
-    lams <- SparseTSCGM_lambdas(data_l, data_c, nLambda, lambda.min.ratio=lambda.min.ratio)
+    # lams <- SparseTSCGM_lambdas(data_l, data_c, nLambda, lambda.min.ratio=lambda_min_kappa,lambda.min.ratio2=lambda_min_beta,penalize.diagonal=penalize.diagonal)
+    lams <- generate_lambdas(data_l, data_c, nLambda,nLambda, lambda_min_kappa=lambda_min_kappa,lambda_min_beta=lambda_min_beta,penalize.diagonal=penalize.diagonal)
     if (missing(lambda_beta)){
       lambda_beta <- lams$lambda_beta
     }
@@ -142,9 +144,15 @@ function(
       
       Estimates[[i]] <- list(beta = beta, kappa = kappa, EBIC = EBIC)
     } else {
-      
-      Estimates[[i]] <- Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i], gamma=gamma,maxit.in=maxit.in, maxit.out = maxit.out,
-                                 penalize.diagonal = penalize.diagonal)  
+      tryres <- try(Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i], gamma=gamma,maxit.in=maxit.in, maxit.out = maxit.out,
+                             penalize.diagonal = penalize.diagonal)  )
+      if (is(tryres,"try-error")){
+        Estimates[[i]] <- list(beta=matrix(NA,Nvar,Nvar+1), kappa=matrix(NA,Nvar,Nvar), EBIC = Inf,
+                               error = tryres)
+      } else {
+        Estimates[[i]] <- tryres
+      }
+
     }
     
    if (verbose){
@@ -160,6 +168,10 @@ function(
 #   lambdas$bic <- logandbic$BIC
 #   lambdas$loglik <- logandbic$logLik
   lambdas$ebic <- sapply(Estimates,'[[','EBIC')
+  
+  if (all(lambdas$ebic==Inf)){
+    stop("No model estimated without error")
+  }
   # Which minimal BIC:
   min <- which.min(lambdas$ebic)
   Results <- Estimates[[min]]
@@ -171,11 +183,12 @@ function(
 
   Results$path <- lambdas
   Results$labels <- colnames(data)
-
-  colnames(Results$beta) <- rownames(Results$beta) <- colnames(Results$kappa) <- rownames(Results$kappa) <-
+  colnames(Results$beta) <- c("1",Results$labels)
+  rownames(Results$beta) <- colnames(Results$kappa) <- rownames(Results$kappa) <-
   colnames(Results$PCC) <- rownames(Results$PCC) <- colnames(Results$PDC) <- rownames(Results$PDC) <-
   Results$labels
 Results$gamma <- gamma
+Results$allResults <- Estimates
 
   class(Results) <- "graphicalVAR"
   

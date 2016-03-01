@@ -49,10 +49,14 @@ randomGVARmodel <- function(
     }
     
   }
-  return(list(
+  Res <- list(
     kappa = trueKappa,
-    beta = trueBeta
-  ))
+    beta = trueBeta,
+    PCC = computePCC(trueKappa),
+    PDC = computePDC(trueBeta,trueKappa)
+  )
+  class(Res) <- "gVARmodel"
+  return(Res)
 }
 
 

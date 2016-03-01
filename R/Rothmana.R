@@ -1,23 +1,34 @@
 Rothmana <-
 function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit.in = 100, maxit.out = 100,
-         penalize.diagonal # if FALSE, penalizes the first diagonal (assumed to be auto regressions), even when ncol(X) != ncol(Y) !
+         penalize.diagonal, # if FALSE, penalizes the first diagonal (assumed to be auto regressions), even when ncol(X) != ncol(Y) !
+         interceptColumn = 1 # Set to NULL or NA to omit
          ){
   # Algorithm 2 of Rothmana, Levinaa & Ji Zhua
   
   nY <- ncol(Y)
   nX <- ncol(X)
-  
+ 
   if (missing(penalize.diagonal)){
-    penalize.diagonal <- nY != nX
+    penalize.diagonal <- (nY != nX-1) & (nY != nX )
   }
   
   lambda_mat <- matrix(lambda_beta,nX, nY)
   if (!penalize.diagonal){
+    if (nY == nX){
+      add <- 0
+    } else if (nY == nX - 1){
+      add <- 1
+    } else {
+      stop("Beta is not P x P or P x P+1, cannot detect diagonal.")
+    }
     for (i in 1:min(c(nY,nX))){
-      lambda_mat[i,i] <- 0
+      lambda_mat[i+add,i] <- 0
     }
   }
-  
+  if (!is.null(interceptColumn) && !is.na(interceptColumn)){
+    lambda_mat[interceptColumn,] <- 0
+  }
+ 
   n <- nrow(X)
   beta_ridge <- beta_ridge_C(X, Y, lambda_beta)
   
@@ -60,7 +71,7 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit
   lik2 <- sum(diag( out4$wi%*%WS))
 
   pdO = sum(sum(kappa[upper.tri(kappa,diag=FALSE)] !=0))
-  pdB = sum(sum(beta !=0))
+  pdB = sum(sum(beta[lambda_mat!=0] !=0)) # CHECK WITH LOURENS
   
   LLk <-  (n/2)*(lik1-lik2) 
   LLk0 <-  (n/2)*(-lik2)
