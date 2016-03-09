@@ -183,6 +183,9 @@ function(
 
   Results$path <- lambdas
   Results$labels <- colnames(data)
+  if (is.null(Results$labels)){
+    Results$labels <- paste0("V",seq_len(ncol(data)))
+  }
   colnames(Results$beta) <- c("1",Results$labels)
   rownames(Results$beta) <- colnames(Results$kappa) <- rownames(Results$kappa) <-
   colnames(Results$PCC) <- rownames(Results$PCC) <- colnames(Results$PDC) <- rownames(Results$PDC) <-
