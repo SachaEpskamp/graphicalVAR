@@ -38,7 +38,7 @@ randomGVARmodel <- function(
       evB <- eigen(trueBeta)$values
     }
     
-
+    
     if (all(evK > 0) & all(Re(evB)^2 + Im(evB)^2 < 1)){
       break
     }
@@ -70,7 +70,9 @@ graphicalVARsim <- function(
   init = mean,
   warmup = 100,
   lbound = rep(-Inf, ncol(kappa)),
-  ubound = rep(Inf, ncol(kappa))
+  ubound = rep(Inf, ncol(kappa)),
+  skewed = rep(0,ncol(kappa)),
+  WN = FALSE
 ){
   
   
@@ -86,14 +88,30 @@ graphicalVARsim <- function(
   
   Sigma <- solve(kappa)
   
-#   lbound <- (lbound - mean) / sd
-#   ubound <- (ubound - mean) / sd
-#   
-  for (t in 2:totTime){
-    Data[t,] <- t(beta %*% Data[t-1,])  + rmvnorm(1, rep(0,Nvar), Sigma)
-    Data[t,] <- ifelse(Data[t,]  < lbound, lbound, Data[t,] )
-    Data[t,] <- ifelse(Data[t,]  > ubound, ubound, Data[t,] )
+  #   lbound <- (lbound - mean) / sd
+  #   ubound <- (ubound - mean) / sd
+  #   
+  
+  if (sum(skewed==rep(0,ncol(kappa)))==ncol(kappa)){
+    for (t in 2:totTime){
+      Data[t,] <- t(beta %*% Data[t-1,])  + rmvnorm(1, rep(0,Nvar), Sigma)
+      Data[t,] <- ifelse(Data[t,]  < lbound, lbound, Data[t,] )
+      Data[t,] <- ifelse(Data[t,]  > ubound, ubound, Data[t,] )
+    }
+  }else{
+    for (t in 2:totTime){#Needed to round Omega to avoid error "not symmetrical"
+      Data[t,] <- t(beta %*% Data[t-1,])  + rmvsnorm(n=1,dim=1*Nvar, mu=rep(0,Nvar),Omega=round(Sigma,digits = 5),
+                                                     alpha=skewed)[1,]
+      Data[t,] <- ifelse(Data[t,]  < lbound, lbound, Data[t,] )
+      Data[t,] <- ifelse(Data[t,]  > ubound, ubound, Data[t,] )
+    }
   }
+  if (WN){
+    for (t in 2:totTime){
+      Data[t,] <- Data[t,] +  rmvnorm(1, rep(0,Nvar), Sigma)
+    }
+  }
+  #,alpha=rnorm(n = Nvar,mean = 0,sd = 7)
   
   return(Data[-seq_len(warmup), ,drop=FALSE])
 }
