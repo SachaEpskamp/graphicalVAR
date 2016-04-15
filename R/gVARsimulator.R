@@ -100,7 +100,7 @@ graphicalVARsim <- function(
     }
   }else{
     for (t in 2:totTime){#Needed to round Omega to avoid error "not symmetrical"
-      Data[t,] <- t(beta %*% Data[t-1,])  + rmvsnorm(n=1,dim=1*Nvar, mu=rep(0,Nvar),Omega=round(Sigma,digits = 5),
+      Data[t,] <- t(beta %*% Data[t-1,])  + sn::rmsn(n=1,dim=1*Nvar, mu=rep(0,Nvar),Omega=round(Sigma,digits = 5),
                                                      alpha=skewed)[1,]
       Data[t,] <- ifelse(Data[t,]  < lbound, lbound, Data[t,] )
       Data[t,] <- ifelse(Data[t,]  > ubound, ubound, Data[t,] )
