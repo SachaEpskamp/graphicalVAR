@@ -24,7 +24,7 @@ function(
   lambda_beta,
   lambda_kappa, maxit.in = 100, maxit.out = 100,
   deleteMissings = TRUE,
-  penalize.diagonal = FALSE,
+  penalize.diagonal = TRUE,
   lambda_min_kappa = 0.05,
   lambda_min_beta = 0.05
   ){

@@ -21,7 +21,7 @@ print.graphicalVAR <- function(x, ...){
       "\n\nNumber of non-zero Directed Contemporaneous Correlations (PDC):",sum(x[['PDC']][upper.tri(x[['PDC']],diag=FALSE)]==0) ,
       "\nPDC Sparsity:",mean(x[['PDC']][upper.tri(x[['PDC']],diag=FALSE)]==0) ,
       "\nNumber of PDC tuning parameters tested:",length(unique(x$path$beta)),
-      paste0("\nPDC network stored in ",name,"$PCC"),
+      paste0("\nPDC network stored in ",name,"$PDC"),
   
       paste0("\n\nUse plot(",name,") to plot the estimated networks.")
   )
