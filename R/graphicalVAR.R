@@ -26,7 +26,9 @@ function(
   deleteMissings = TRUE,
   penalize.diagonal = TRUE,
   lambda_min_kappa = 0.05,
-  lambda_min_beta = 0.05
+  lambda_min_beta = 0.05,
+  oldVersion = FALSE, # Mimic old package behavior?
+  old_lambda.min.ratio = 0.01 # Mimic old lambda min ratio?
   ){
   
   # Check input:
@@ -73,8 +75,11 @@ function(
   
   # Generate lambdas (from SparseTSCGM package):
   if (missing(lambda_beta) | missing(lambda_kappa)){
-    # lams <- SparseTSCGM_lambdas(data_l, data_c, nLambda, lambda.min.ratio=lambda_min_kappa,lambda.min.ratio2=lambda_min_beta,penalize.diagonal=penalize.diagonal)
-    lams <- generate_lambdas(data_l, data_c, nLambda,nLambda, lambda_min_kappa=lambda_min_kappa,lambda_min_beta=lambda_min_beta,penalize.diagonal=penalize.diagonal)
+    if (oldVersion){
+      lams <- SparseTSCGM_lambdas(data_l, data_c, nLambda, lambda.min.ratio=old_lambda.min.ratio)      
+    } else {
+      lams <- generate_lambdas(data_l, data_c, nLambda,nLambda, lambda_min_kappa=lambda_min_kappa,lambda_min_beta=lambda_min_beta,penalize.diagonal=penalize.diagonal)      
+    }
     if (missing(lambda_beta)){
       lambda_beta <- lams$lambda_beta
     }
@@ -145,7 +150,7 @@ function(
       Estimates[[i]] <- list(beta = beta, kappa = kappa, EBIC = EBIC)
     } else {
       tryres <- try(Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i], gamma=gamma,maxit.in=maxit.in, maxit.out = maxit.out,
-                             penalize.diagonal = penalize.diagonal)  )
+                             penalize.diagonal = penalize.diagonal, oldVersion = oldVersion)  )
       if (is(tryres,"try-error")){
         Estimates[[i]] <- list(beta=matrix(NA,Nvar,Nvar+1), kappa=matrix(NA,Nvar,Nvar), EBIC = Inf,
                                error = tryres)

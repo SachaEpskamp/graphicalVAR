@@ -1,2 +1,18 @@
+Changes in Version 0.1.5:
+    o Added 'oldVersion' and 'old_lambda.min.ratio' arguments to 'graphicalVAR' to mimic 0.1.2 behavior.
+
+Changes in Version 0.1.4:
+    o 'graphicalVAR' again standardizes variables before running by default. Can be controlled using the 'scale' argument
+    o New arguments to 'graphicalVAR':
+        o deleteMissings
+        o penalize.diagonal
+        o lambda_min_kappa
+        o lambda_min_beta
+        o scale
+    o Added 'randomGVARmodel' function to simulate graphicalVAR model matrices
+    o Added unregularized estimation when both lambda_kappa = 0 and lambda_beta = 0
+    o Greatly updated the tuning parameter sequence generating algorithm. The sequence should now be better chosen. However, note that this change leads to different estimated networks as with previous graphicalVAR versions (as different LASSO tuning parameters are used)
+    o Added 'lbound' and 'ubound' arguments to graphicalVARsim
+
 Changes in Version 0.1.3:
     o graphicalVAR now only centers and does not standardize

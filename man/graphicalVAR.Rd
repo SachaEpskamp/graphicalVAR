@@ -8,8 +8,11 @@ Estimate the graphical VAR model.
 Estimates the graphical VAR (Wild et al., 2010) model through LASSO estimation coupled with extended Bayesian information criterion for choosing the optimal tuning parameters. The estimation procedure is outlined by Rothman, Levina and Zhu (2010) and is further described by Abegaz and Wit (2013). The procedure here is based on the work done in the R package SparseTSCGM (Abegaz and Wit, 2014).
 }
 \usage{
-graphicalVAR(data, nLambda = 50, verbose = TRUE, gamma = 0.5, lambda_beta, lambda_kappa, 
-                  maxit.in = 100, maxit.out = 100)
+graphicalVAR(data, nLambda = 50, verbose = TRUE, gamma = 0.5, scale
+                 = TRUE, lambda_beta, lambda_kappa, maxit.in = 100,
+                 maxit.out = 100, deleteMissings = TRUE,
+                 penalize.diagonal = TRUE, lambda_min_kappa = 0.05,
+                 lambda_min_beta = 0.05)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -25,11 +28,14 @@ Logical, should a progress bar be printed to the console?
   \item{gamma}{
 The EBIC hyper-parameter. Set to 0 to use regular BIC.
 }
+\item{scale}{
+Logical, should responses be standardized before estimation?
+}
   \item{lambda_beta}{
-An optional vector of lambda_beta values to test.
+An optional vector of lambda_beta values to test. Set \code{lambda_beta = 0} argument and \code{lambda_kappa = 0} for unregularized estimation.
 }
   \item{lambda_kappa}{
-An optional vector of lambda_kappa values to test.
+An optional vector of lambda_kappa values to test. Set \code{lambda_beta = 0} argument and \code{lambda_kappa = 0} for unregularized estimation.
 }
   \item{maxit.in}{
 Maximum number of iterations in the inner loop (computing beta)
@@ -37,9 +43,21 @@ Maximum number of iterations in the inner loop (computing beta)
   \item{maxit.out}{
   Maximum number of iterations in the outer loop
   }
+  \item{deleteMissings}{
+    Logical, should missing responses be deleted?
+  }
+  \item{penalize.diagonal}{
+  Logical, should the diagonal of beta be penalized (i.e., penalize auto-regressions)?
+  }
+  \item{lambda_min_kappa}{
+      Multiplier of maximal tuning parameter for kappa
+  }
+    \item{lambda_min_beta}{
+      Multiplier of maximal tuning parameter for beta
+  }
 }
 \details{
-Let y_t denote the vector of responses of a subject on a set of items on time point t. The graphical VAR model, using only one lag, is defined as follows:
+Let y_t denote the vector of centered responses of a subject on a set of items on time point t. The graphical VAR model, using only one lag, is defined as follows:
 
 y_t = Beta y_{y-1} + epsilon_t
 
@@ -54,6 +72,8 @@ Similarly, the beta matrix can be standardized to partial directed correlations 
 PDC(y_{i,t-1}, y_{j,t}) = beta_{ji} / sqrt{sigma_{jj} kappa_{ii} + beta_{ji}^2}
 
 In which sigma is the inverse of kappa. Note that this process transposes the beta matrix. This is done because in representing a directed network it is typical to let rows indicate the node of origin and columns the node of destination.
+
+Set \code{lambda_beta = 0} argument and \code{lambda_kappa = 0} for unregularized estimation.
 }
 \value{
 A \code{graphicalVAR} object, which is a list containing:
@@ -91,7 +111,7 @@ Sacha Epskamp <mail@sachaepskamp.com>
 
 \examples{
 # Simulate model:
-Mod <- randomGVARmodel(10)
+Mod <- randomGVARmodel(4,probKappaEdge = 0.8,probBetaEdge = 0.8)
 
 # Simulate data:
 Data <- graphicalVARsim(100,Mod$beta,Mod$kappa)

@@ -8,7 +8,8 @@ Sends the estimated PCC and PDC networks to \code{\link[qgraph]{qgraph}}.
 }
 \usage{
 \method{plot}{graphicalVAR}(x, include = c("PCC", "PDC"), repulsion = 1, 
-                horizontal = TRUE, titles = TRUE, sameLayout = TRUE, ...)
+                horizontal = TRUE, titles = TRUE, sameLayout = TRUE, 
+                unweightedLayout = FALSE, ...)
 }
 \arguments{
   \item{x}{
@@ -28,6 +29,9 @@ Logical, should titles be added to the plots?
 }
   \item{sameLayout}{
 Logical, should both networks be plotted in the same layout?
+}
+ \item{unweightedLayout}{
+Logical, should the layout be based on the unweighted network instead of the weighted network?
 }
   \item{\dots}{
 Arguments sent to \code{\link[qgraph]{qgraph}}

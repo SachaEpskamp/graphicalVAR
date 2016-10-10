@@ -1,7 +1,8 @@
 Rothmana <-
 function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit.in = 100, maxit.out = 100,
          penalize.diagonal, # if FALSE, penalizes the first diagonal (assumed to be auto regressions), even when ncol(X) != ncol(Y) !
-         interceptColumn = 1 # Set to NULL or NA to omit
+         interceptColumn = 1, # Set to NULL or NA to omit
+         oldVersion = FALSE
          ){
   # Algorithm 2 of Rothmana, Levinaa & Ji Zhua
   
@@ -9,7 +10,11 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit
   nX <- ncol(X)
  
   if (missing(penalize.diagonal)){
-    penalize.diagonal <- (nY != nX-1) & (nY != nX )
+    if (oldVersion){
+      penalize.diagonal <- nY != nX
+    } else {
+      penalize.diagonal <- (nY != nX-1) & (nY != nX ) 
+    }
   }
   
   lambda_mat <- matrix(lambda_beta,nX, nY)
@@ -71,7 +76,11 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit
   lik2 <- sum(diag( out4$wi%*%WS))
 
   pdO = sum(sum(kappa[upper.tri(kappa,diag=FALSE)] !=0))
-  pdB = sum(sum(beta[lambda_mat!=0] !=0)) # CHECK WITH LOURENS
+  if (oldVersion){
+    pdB = sum(sum(beta !=0))
+  } else {
+    pdB = sum(sum(beta[lambda_mat!=0] !=0)) # CHECK WITH LOURENS
+  }
   
   LLk <-  (n/2)*(lik1-lik2) 
   LLk0 <-  (n/2)*(-lik2)

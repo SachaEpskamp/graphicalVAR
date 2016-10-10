@@ -66,13 +66,13 @@ graphicalVARsim <- function(
   beta, # if dim  is 2xnVar, assume changescores
   kappa,
   mean = rep(0,ncol(kappa)),
-  sd = rep(1, ncol(kappa)),
+  # sd = rep(1, ncol(kappa)),
   init = mean,
   warmup = 100,
   lbound = rep(-Inf, ncol(kappa)),
-  ubound = rep(Inf, ncol(kappa)),
-  skewed = rep(0,ncol(kappa)),
-  WN = FALSE
+  ubound = rep(Inf, ncol(kappa))
+#   skewed = rep(0,ncol(kappa)),
+#   WN = FALSE
 ){
   
   
@@ -92,26 +92,26 @@ graphicalVARsim <- function(
   #   ubound <- (ubound - mean) / sd
   #   
   
-  if (sum(skewed==rep(0,ncol(kappa)))==ncol(kappa)){
+  # if (sum(skewed==rep(0,ncol(kappa)))==ncol(kappa)){
     for (t in 2:totTime){
-      Data[t,] <- t(beta %*% Data[t-1,])  + rmvnorm(1, rep(0,Nvar), Sigma)
+      Data[t,] <- t(beta %*% (Data[t-1,]-mean))  + mvtnorm::rmvnorm(1, rep(0,Nvar), Sigma)
       Data[t,] <- ifelse(Data[t,]  < lbound, lbound, Data[t,] )
       Data[t,] <- ifelse(Data[t,]  > ubound, ubound, Data[t,] )
     }
-  }else{
-    for (t in 2:totTime){#Needed to round Omega to avoid error "not symmetrical"
-      Data[t,] <- t(beta %*% Data[t-1,])  + sn::rmsn(n=1,dim=1*Nvar, mu=rep(0,Nvar),Omega=round(Sigma,digits = 5),
-                                                     alpha=skewed)[1,]
-      Data[t,] <- ifelse(Data[t,]  < lbound, lbound, Data[t,] )
-      Data[t,] <- ifelse(Data[t,]  > ubound, ubound, Data[t,] )
-    }
-  }
-  if (WN){
-    for (t in 2:totTime){
-      Data[t,] <- Data[t,] +  rmvnorm(1, rep(0,Nvar), Sigma)
-    }
-  }
-  #,alpha=rnorm(n = Nvar,mean = 0,sd = 7)
+#   }else{
+#     for (t in 2:totTime){#Needed to round Omega to avoid error "not symmetrical"
+#       Data[t,] <- t(beta %*% Data[t-1,])  + sn::rmsn(n=1,dim=1*Nvar, mu=rep(0,Nvar),Omega=round(Sigma,digits = 5),
+#                                                      alpha=skewed)[1,]
+#       Data[t,] <- ifelse(Data[t,]  < lbound, lbound, Data[t,] )
+#       Data[t,] <- ifelse(Data[t,]  > ubound, ubound, Data[t,] )
+#     }
+#   }
+#   if (WN){
+#     for (t in 2:totTime){
+#       Data[t,] <- Data[t,] +  rmvnorm(1, rep(0,Nvar), Sigma)
+#     }
+#   }
+ 
   
   return(Data[-seq_len(warmup), ,drop=FALSE])
 }

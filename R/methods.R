@@ -65,7 +65,7 @@ plot.graphicalVAR <- plot.gVARmodel <- function(x, include = c("PCC","PDC"), rep
 
         Res[[i]] <- qgraph::qgraph(x$PCC, layout = Layout, ..., repulsion=repulsion)
       } else {
-        L <- qgraph:::qgraph(wPCC,DoNotPlot=TRUE,...,repulsion=repulsion)$layout
+        L <- qgraph::qgraph(wPCC,DoNotPlot=TRUE,...,repulsion=repulsion)$layout
         Res[[i]] <- qgraph::qgraph(x$PCC, layout = L,..., repulsion=repulsion)
       }
       
@@ -78,7 +78,7 @@ plot.graphicalVAR <- plot.gVARmodel <- function(x, include = c("PCC","PDC"), rep
       if (sameLayout & all(c("PCC","PDC") %in% include)){
         Res[[i]] <- qgraph::qgraph(x$PDC, layout = Layout, ..., repulsion=repulsion, directed=TRUE)
       } else {
-        L <- qgraph:::qgraph(wPDC,DoNotPlot=TRUE,...,repulsion=repulsion, directed=TRUE)$layout
+        L <- qgraph::qgraph(wPDC,DoNotPlot=TRUE,...,repulsion=repulsion, directed=TRUE)$layout
         Res[[i]] <- qgraph::qgraph(x$PDC,layout=L, ..., repulsion=repulsion, directed=TRUE)
       }
       
