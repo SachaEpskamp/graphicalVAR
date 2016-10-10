@@ -26,10 +26,19 @@ function(
   deleteMissings = TRUE,
   penalize.diagonal = TRUE,
   lambda_min_kappa = 0.05,
-  lambda_min_beta = 0.05,
-  oldVersion = FALSE, # Mimic old package behavior?
-  old_lambda.min.ratio = 0.01 # Mimic old lambda min ratio?
+  lambda_min_beta = lambda_min_kappa,
+  mimic = c("current","0.1.2","0.1.4")
   ){
+  
+  mimic <- match.arg(mimic)
+  if (mimic == "0.1.2"){
+    if (lambda_min_beta != lambda_min_kappa){
+      warning("mimic = 0.1.2 only uses lambda_min_kappa, not lambda_min_beta")
+    }
+    if (lambda_min_kappa != 0.01){
+      warning("Set lambda_min_kappa = 0.01 to mimic 0.1.2 default behavior")
+    }
+  }
   
   # Check input:
   if (is.data.frame(data)){
@@ -75,10 +84,11 @@ function(
   
   # Generate lambdas (from SparseTSCGM package):
   if (missing(lambda_beta) | missing(lambda_kappa)){
-    if (oldVersion){
-      lams <- SparseTSCGM_lambdas(data_l, data_c, nLambda, lambda.min.ratio=old_lambda.min.ratio)      
+    if (mimic == "0.1.2"){
+      lams <- SparseTSCGM_lambdas(data_l, data_c, nLambda, lambda.min.ratio=lambda_min_kappa)      
     } else {
-      lams <- generate_lambdas(data_l, data_c, nLambda,nLambda, lambda_min_kappa=lambda_min_kappa,lambda_min_beta=lambda_min_beta,penalize.diagonal=penalize.diagonal)      
+      lams <- generate_lambdas(data_l, data_c, nLambda,nLambda, lambda_min_kappa=lambda_min_kappa,lambda_min_beta=lambda_min_beta,penalize.diagonal=penalize.diagonal,
+                               version0.1.4 = mimic == "0.1.4")      
     }
     if (missing(lambda_beta)){
       lambda_beta <- lams$lambda_beta
@@ -150,7 +160,7 @@ function(
       Estimates[[i]] <- list(beta = beta, kappa = kappa, EBIC = EBIC)
     } else {
       tryres <- try(Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i], gamma=gamma,maxit.in=maxit.in, maxit.out = maxit.out,
-                             penalize.diagonal = penalize.diagonal, oldVersion = oldVersion)  )
+                             penalize.diagonal = penalize.diagonal, oldVersion = mimic == "0.1.2")  )
       if (is(tryres,"try-error")){
         Estimates[[i]] <- list(beta=matrix(NA,Nvar,Nvar+1), kappa=matrix(NA,Nvar,Nvar), EBIC = Inf,
                                error = tryres)

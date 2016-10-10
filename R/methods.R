@@ -68,7 +68,7 @@ plot.graphicalVAR <- plot.gVARmodel <- function(x, include = c("PCC","PDC"), rep
         L <- qgraph::qgraph(wPCC,DoNotPlot=TRUE,...,repulsion=repulsion)$layout
         Res[[i]] <- qgraph::qgraph(x$PCC, layout = L,..., repulsion=repulsion)
       }
-      
+
       if (titles){
         qtitle("Partial Contemporaneous Correlations")
       }

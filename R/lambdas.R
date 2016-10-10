@@ -14,14 +14,20 @@ generate_lambdas <- function(
   nLambda_beta = 10,
   lambda_min_kappa = 0.05,
   lambda_min_beta = 0.05, 
-  penalize.diagonal=TRUE         
+  penalize.diagonal=TRUE,
+  version0.1.4 = FALSE
 ){
   N <- nrow(Y)
   P <- ncol(Y)
   
+
   #### Lambda sequence for Kappa:
   corY <- cov2cor(t(Y)%*%Y/nrow(Y))
-  lam_K_max = max(abs(corY))
+  if (version0.1.4){
+    lam_K_max = max(abs(corY))
+  } else {
+    lam_K_max = max(abs(corY[upper.tri(corY)]))
+  }
   lam_K_min = lambda_min_kappa*lam_K_max
   lam_K = exp(seq(log(lam_K_max), log(lam_K_min), length = nLambda_kappa))
   

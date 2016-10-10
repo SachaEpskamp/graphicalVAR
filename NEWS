@@ -1,5 +1,6 @@
 Changes in Version 0.1.5:
-    o Added 'oldVersion' and 'old_lambda.min.ratio' arguments to 'graphicalVAR' to mimic 0.1.2 behavior.
+    o Added 'mimic' argument to 'graphicalVAR' to mimic 0.1.2 and 0.1.4 behavior.
+    o Lambda sequence for kappa now uses the maximum absolute correlation as maximal value rather than 1.
 
 Changes in Version 0.1.4:
     o 'graphicalVAR' again standardizes variables before running by default. Can be controlled using the 'scale' argument
