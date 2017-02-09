@@ -27,7 +27,12 @@ function(
   penalize.diagonal = TRUE,
   lambda_min_kappa = 0.05,
   lambda_min_beta = lambda_min_kappa,
-  mimic = c("current","0.1.2","0.1.4")
+  mimic = c("current","0.1.2","0.1.4","0.1.5"),
+  vars,
+  beepvar,
+  dayvar,
+  idvar,
+  centerWithin = TRUE
   ){
   
   mimic <- match.arg(mimic)
@@ -40,30 +45,46 @@ function(
     }
   }
   
-  # Check input:
-  if (is.data.frame(data)){
-    data <- as.matrix(data)
+  # If list:
+  if (is.list(data) && !is.data.frame(data)){
+    if (!("data_c" %in% names(data) & "data_l" %in% names(data))){
+      stop("'data_c' and 'data_l' must be contained in 'data'")
+    }
+    data_c <- data$data_c
+    data_l <- data$data_l
+  } else{
+    if (mimic == "0.1.5"){
+      # Check input:
+      if (is.data.frame(data)){
+        data <- as.matrix(data)
+      }
+      stopifnot(is.matrix(data))
+      
+      # Center data:
+      data <- scale(data, TRUE, scale)
+      
+      # Compute current and lagged data:
+      data_c <- data[-1,,drop=FALSE]
+      data_l <- cbind(1,data[-nrow(data),,drop=FALSE])
+    } else {
+      data <- tsData(as.data.frame(data),
+                     vars = vars,
+                      beepvar = beepvar,
+                      dayvar = dayvar,
+                     idvar = idvar,
+                      scale = scale,
+                       centerWithin = centerWithin)
+      data_c <- data$data_c
+      data_l <- data$data_l
+    }
   }
- 
-  stopifnot(is.matrix(data))
   
+  data_c <- as.matrix(data_c)
+  data_l <- as.matrix(data_l)
   
+  Nvar <- ncol(data_c)
+  Ntime <- nrow(data_c)
 
-  
-  Nvar <- ncol(data)
-  Ntime <- nrow(data)
-
-  # Center data:
-  data <- scale(data, TRUE, scale)
-#   if (scale){
-#     for (i in 1:ncol(data)) data[,i] <- (data[,i] - mean(data[,i],na.rm=TRUE)) / sd(data[,i],na.rm=TRUE)
-#   } else {
-#     for (i in 1:ncol(data)) data[,i] <- (data[,i] - mean(data[,i],na.rm=TRUE))
-#   }
-  
-  # Compute current and lagged data:
-  data_c <- data[-1,,drop=FALSE]
-  data_l <- cbind(1,data[-nrow(data),,drop=FALSE])
   
   # Delete missing rows:
   if (any(is.na(data_c)) || any(is.na(data_l))){
@@ -197,9 +218,9 @@ function(
   Results$PDC <- computePDC(Results$beta, Results$kappa)  
 
   Results$path <- lambdas
-  Results$labels <- colnames(data)
+  Results$labels <- colnames(data_c)
   if (is.null(Results$labels)){
-    Results$labels <- paste0("V",seq_len(ncol(data)))
+    Results$labels <- paste0("V",seq_len(ncol(data_c)))
   }
   colnames(Results$beta) <- c("1",Results$labels)
   rownames(Results$beta) <- colnames(Results$kappa) <- rownames(Results$kappa) <-

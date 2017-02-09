@@ -1,3 +1,8 @@
+Changes in Version 0.1.6:
+    o Added 'tsData' function to prepare data
+    o graphicalVAR now supports multiple subjects (fixed effects only) and day effects
+    o 'beepvar' can now be used to handle missing beeps
+
 Changes in Version 0.1.5:
     o Added 'mimic' argument to 'graphicalVAR' to mimic 0.1.2 and 0.1.4 behavior.
     o Lambda sequence for kappa now uses the maximum absolute correlation as maximal value rather than 1.
