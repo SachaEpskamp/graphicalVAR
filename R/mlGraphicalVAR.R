@@ -10,6 +10,11 @@ mlGraphicalVAR <- function(
   glasso_gamma = 0.5, # Gamma used in glasso in qgraph
   verbose = TRUE,
   subjectNetworks = TRUE,
+  lambda_min_kappa_fixed = 0.001,
+  lambda_min_beta_fixed = 0.001,
+  lambda_min_kappa = 0.05,
+  lambda_min_beta = lambda_min_kappa,
+  lambda_min_glasso = 0.01,
   ... # Args sent to graphicalVAR
 ){
   if (missing(idvar)) stop("'idvar' must be assigned")
@@ -22,7 +27,7 @@ mlGraphicalVAR <- function(
   }
   
   # Fixed effects:
-  ResFixed <- graphicalVAR(dataPrepped, ...)
+  ResFixed <- graphicalVAR(dataPrepped, lambda_min_kappa = lambda_min_kappa_fixed, lambda_min_beta = lambda_min_beta_fixed, ...)
   
   # Between-subjects:
   if (verbose){
@@ -31,7 +36,7 @@ mlGraphicalVAR <- function(
   meansData <- dataPrepped$data_means
   meansData <- meansData[,names(meansData) != idvar]
   meansData <- meansData[rowMeans(is.na(meansData))!=1,]
-  ResBetween <- qgraph::EBICglasso(cov(meansData),nrow(meansData),glasso_gamma,returnAllResults = TRUE)
+  ResBetween <- qgraph::EBICglasso(cov(meansData),nrow(meansData),glasso_gamma,returnAllResults = TRUE,lambda.min.ratio=lambda_min_glasso)
   
   # Computing model per person:
  
@@ -50,6 +55,8 @@ mlGraphicalVAR <- function(
                                                           dayvar=dataPrepped$dayvar,
                                                           idvar=dataPrepped$idvar,
                                                           scale = scale,
+                                                          lambda_min_kappa=lambda_min_kappa,
+                                                          lambda_min_beta=lambda_min_beta,
                                                           centerWithin = centerWithin,...,verbose = FALSE)))})
       if (verbose){
         setTxtProgressBar(pb,i)
@@ -75,6 +82,7 @@ mlGraphicalVAR <- function(
                   betweenResults = ResBetween,
                   ids = IDs,
                   subjectPCC = lapply(idResults, '[[', 'PCC'),
+                  subjectPDC = lapply(idResults, '[[', 'PDC'),
                   subjecResults = idResults)
   class(Results) <- "mlGraphicalVAR"
   return(Results)
