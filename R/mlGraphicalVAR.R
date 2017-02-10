@@ -45,10 +45,10 @@ mlGraphicalVAR <- function(
     }
     for (i in seq_along(IDs)){
       capture.output({idResults[[i]] <- try(suppressWarnings(graphicalVAR(dataPrepped$data[dataPrepped$data[[idvar]] == IDs[i],],
-                                                          vars=vars,
-                                                          beepvar=beepvar,
-                                                          dayvar=dayvar,
-                                                          idvar=idvar,
+                                                          vars=dataPrepped$vars,
+                                                          beepvar=dataPrepped$beepvar,
+                                                          dayvar=dataPrepped$dayvar,
+                                                          idvar=dataPrepped$idvar,
                                                           scale = scale,
                                                           centerWithin = centerWithin,...,verbose = FALSE)))})
       if (verbose){

@@ -87,7 +87,11 @@ tsData <- function(data,
     data = augData,
     data_c = data_c[,vars],
     data_l = cbind(1,data_l[,vars]),
-    data_means = MeansData
+    data_means = MeansData,
+    vars=vars,
+    idvar=idvar,
+    dayvar=dayvar,
+    beepvar=beepvar
   )
   
   return(Results)
