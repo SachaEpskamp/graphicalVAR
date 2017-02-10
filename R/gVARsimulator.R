@@ -1,3 +1,5 @@
+
+
 randomGVARmodel <- function(
   Nvar,
   probKappaEdge = 0.1,

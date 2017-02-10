@@ -7,7 +7,7 @@ mlGraphicalVAR <- function(
   idvar,
   scale = TRUE,
   centerWithin = TRUE,
-  glasso_gamma = 0.5, # Gamma used in glasso in qgraph
+  gamma = 0.5, # Gamma used in glasso in qgraph
   verbose = TRUE,
   subjectNetworks = TRUE,
   lambda_min_kappa_fixed = 0.001,
@@ -27,7 +27,7 @@ mlGraphicalVAR <- function(
   }
   
   # Fixed effects:
-  ResFixed <- graphicalVAR(dataPrepped, lambda_min_kappa = lambda_min_kappa_fixed, lambda_min_beta = lambda_min_beta_fixed, ...)
+  ResFixed <- graphicalVAR(dataPrepped, lambda_min_kappa = lambda_min_kappa_fixed, lambda_min_beta = lambda_min_beta_fixed, gamma=gamma,...)
   
   # Between-subjects:
   if (verbose){
@@ -36,7 +36,7 @@ mlGraphicalVAR <- function(
   meansData <- dataPrepped$data_means
   meansData <- meansData[,names(meansData) != idvar]
   meansData <- meansData[rowMeans(is.na(meansData))!=1,]
-  ResBetween <- qgraph::EBICglasso(cov(meansData),nrow(meansData),glasso_gamma,returnAllResults = TRUE,lambda.min.ratio=lambda_min_glasso)
+  ResBetween <- qgraph::EBICglasso(cov(meansData),nrow(meansData),gamma,returnAllResults = TRUE,lambda.min.ratio=lambda_min_glasso)
   
   # Computing model per person:
  
@@ -57,6 +57,7 @@ mlGraphicalVAR <- function(
                                                           scale = scale,
                                                           lambda_min_kappa=lambda_min_kappa,
                                                           lambda_min_beta=lambda_min_beta,
+                                                          gamma=gamma,
                                                           centerWithin = centerWithin,...,verbose = FALSE)))})
       if (verbose){
         setTxtProgressBar(pb,i)
