@@ -5,7 +5,8 @@ tsData <- function(data,
                      dayvar,
                      idvar,
                      scale = TRUE,
-                     centerWithin = TRUE){
+                     centerWithin = TRUE,
+                   deleteMissings = TRUE){
   data <- as.data.frame(data)
   
   # Add subject:
@@ -76,12 +77,14 @@ tsData <- function(data,
   
   # Obtain data_l (slice away last row per day/subject):
   data_l <- augData %>% dplyr::group_by_(idvar,dayvar) %>% dplyr::slice(-n())
-  
+
   # # Remove rows with missings:
-  # isNA <- rowSums(is.na(data_c)) > 0 | rowSums(is.na(data_l)) > 0
-  # data_c <- data_c[!isNA,]
-  # data_l <- data_l[!isNA,]
-  
+  if (deleteMissings){
+    isNA <- rowSums(is.na(data_c)) > 0 | rowSums(is.na(data_l)) > 0
+    data_c <- data_c[!isNA,]
+    data_l <- data_l[!isNA,]
+  }
+
   # Return datasets:
   Results <- list(
     data = augData,

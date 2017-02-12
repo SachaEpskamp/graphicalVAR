@@ -78,7 +78,6 @@ function(
       data_l <- data$data_l
     }
   }
-  
   data_c <- as.matrix(data_c)
   data_l <- as.matrix(data_l)
   
@@ -228,6 +227,8 @@ function(
   Results$labels
 Results$gamma <- gamma
 Results$allResults <- Estimates
+
+Results$N <- nrow(data_c)
 
   class(Results) <- "graphicalVAR"
   
