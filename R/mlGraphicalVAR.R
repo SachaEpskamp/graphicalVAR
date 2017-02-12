@@ -55,10 +55,10 @@ mlGraphicalVAR <- function(
     }
     for (i in seq_along(subjectNetworks)){
       capture.output({idResults[[i]] <- try(suppressWarnings(graphicalVAR(dataPrepped$data[dataPrepped$data[[idvar]] == subjectNetworks[i],],
-                                                          vars=dataPrepped[[vars]],
-                                                          beepvar=dataPrepped[[beepvar]],
-                                                          dayvar=dataPrepped[[dayvar]],
-                                                          idvar=dataPrepped[[idvar]],
+                                                          vars=dataPrepped$vars,
+                                                          beepvar=dataPrepped$beepvar,
+                                                          dayvar=dataPrepped$dayvar,
+                                                          idvar=dataPrepped$idvar,
                                                           scale = scale,
                                                           lambda_min_kappa=lambda_min_kappa,
                                                           lambda_min_beta=lambda_min_beta,
