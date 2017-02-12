@@ -51,7 +51,7 @@ mlGraphicalVAR <- function(
     
     if (verbose){
       message("Estimating subject-specific networks")
-      pb <- txtProgressBar(max=length(IDs),style=3)
+      pb <- txtProgressBar(max=length(subjectNetworks),style=3)
     }
     for (i in seq_along(subjectNetworks)){
       capture.output({idResults[[i]] <- try(suppressWarnings(graphicalVAR(dataPrepped$data[dataPrepped$data[[idvar]] == subjectNetworks[i],],
