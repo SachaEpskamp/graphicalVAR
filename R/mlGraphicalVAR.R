@@ -1,4 +1,5 @@
 # Multi-level like graphical VAR:
+  
 mlGraphicalVAR <- function(
   data,
   vars,
@@ -9,7 +10,7 @@ mlGraphicalVAR <- function(
   centerWithin = TRUE,
   gamma = 0.5, # Gamma used in glasso in qgraph
   verbose = TRUE,
-  subjectNetworks = TRUE,
+  subjectNetworks = TRUE, # Or a vector of which subjects to use!
   lambda_min_kappa_fixed = 0.001,
   lambda_min_beta_fixed = 0.001,
   lambda_min_kappa = 0.05,
@@ -43,17 +44,21 @@ mlGraphicalVAR <- function(
   
   IDs <- unique(dataPrepped$data[[idvar]])
   idResults <- list()
-  if (subjectNetworks){
+  if (!identical(subjectNetworks,FALSE)){
+    if (isTRUE(subjectNetworks)){
+      subjectNetworks <- unique(dataPrepped[[dataPrepped[[idvar]]]])
+    }
+    
     if (verbose){
       message("Estimating subject-specific networks")
       pb <- txtProgressBar(max=length(IDs),style=3)
     }
-    for (i in seq_along(IDs)){
-      capture.output({idResults[[i]] <- try(suppressWarnings(graphicalVAR(dataPrepped$data[dataPrepped$data[[idvar]] == IDs[i],],
-                                                          vars=dataPrepped$vars,
-                                                          beepvar=dataPrepped$beepvar,
-                                                          dayvar=dataPrepped$dayvar,
-                                                          idvar=dataPrepped$idvar,
+    for (i in seq_along(subjectNetworks)){
+      capture.output({idResults[[i]] <- try(suppressWarnings(graphicalVAR(dataPrepped$data[dataPrepped$data[[idvar]] == subjectNetworks[i],],
+                                                          vars=dataPrepped[[vars]],
+                                                          beepvar=dataPrepped[[beepvar]],
+                                                          dayvar=dataPrepped[[dayvar]],
+                                                          idvar=dataPrepped[[idvar]],
                                                           scale = scale,
                                                           lambda_min_kappa=lambda_min_kappa,
                                                           lambda_min_beta=lambda_min_beta,
