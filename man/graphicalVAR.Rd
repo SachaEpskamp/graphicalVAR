@@ -12,7 +12,9 @@ graphicalVAR(data, nLambda = 50, verbose = TRUE, gamma = 0.5, scale
                  = TRUE, lambda_beta, lambda_kappa, maxit.in = 100,
                  maxit.out = 100, deleteMissings = TRUE,
                  penalize.diagonal = TRUE, lambda_min_kappa = 0.05,
-                 lambda_min_beta = 0.05)
+                 lambda_min_beta = lambda_min_kappa, mimic =
+                 c("current", "0.1.2", "0.1.4", "0.1.5"), vars,
+                 beepvar, dayvar, idvar, centerWithin = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -55,6 +57,24 @@ Maximum number of iterations in the inner loop (computing beta)
     \item{lambda_min_beta}{
       Multiplier of maximal tuning parameter for beta
   }
+  \item{mimic}{
+      Allows one to mimic earlier versions of graphicalVAR
+  }
+\item{vars}{
+Vectors of variables to include in the analysis
+}
+\item{beepvar}{
+String indicating assessment beep per day (if missing, is added). Adding this argument will cause non-consecutive beeps to be treated as missing!
+}
+  \item{dayvar}{
+String indicating assessment day. Adding this argument makes sure that the first measurement of a day is not regressed on the last measurement of the previous day. IMPORTANT: only add this if the data has multiple observations per day.
+}
+  \item{idvar}{
+String indicating the subject ID
+}
+\item{centerWithin}{
+Logical, should subject data be within-person centered before estimating fixed effects?
+}
 }
 \details{
 Let y_t denote the vector of centered responses of a subject on a set of items on time point t. The graphical VAR model, using only one lag, is defined as follows:

@@ -1,11 +1,11 @@
 Package: graphicalVAR
 Type: Package
 Title: Graphical VAR for Experience Sampling Data
-Version: 0.1.6
+Version: 0.2
 Author: Sacha Epskamp
 Maintainer: Sacha Epskamp <mail@sachaepskamp.com>
 Description: Estimates within and between time point interactions in experience sampling data, using the Graphical VAR model in combination with LASSO and EBIC.
 License: GPL (>= 2)
 LinkingTo: Rcpp, RcppArmadillo
-Imports: Rcpp (>= 0.11.3), Matrix, glasso, glmnet, mvtnorm, qgraph (>= 1.3.1), dplyr, methods
+Imports: Rcpp (>= 0.11.3), Matrix, glasso, glmnet, mvtnorm, qgraph (>= 1.3.1), dplyr, methods, igraph
 Depends: R (>= 3.1.0)

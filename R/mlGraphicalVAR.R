@@ -46,7 +46,7 @@ mlGraphicalVAR <- function(
   idResults <- list()
   if (!identical(subjectNetworks,FALSE)){
     if (isTRUE(subjectNetworks)){
-      subjectNetworks <- unique(dataPrepped[[dataPrepped[[idvar]]]])
+      subjectNetworks <- IDs
     }
     
     if (verbose){

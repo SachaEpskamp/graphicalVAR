@@ -7,6 +7,8 @@ tsData <- function(data,
                      scale = TRUE,
                      centerWithin = TRUE,
                    deleteMissings = TRUE){
+  . <- NULL
+  
   data <- as.data.frame(data)
   
   # Add subject:
