@@ -8,7 +8,7 @@ tsData <- function(data,
                      centerWithin = TRUE,
                    deleteMissings = TRUE){
   . <- NULL
-  
+
   data <- as.data.frame(data)
   
   # Add subject:
@@ -34,6 +34,9 @@ tsData <- function(data,
   if (missing(vars)){
     vars <- names(data[!names(data)%in%c(idvar,dayvar,beepvar)])
   }
+  
+  # Only retain important columns:
+  data <- data[,c(vars,idvar,dayvar,beepvar)]
   
   # Center and scale data:
   data[,vars] <- scale(data[,vars], TRUE, scale)
@@ -69,7 +72,7 @@ tsData <- function(data,
       dplyr::group_by_(idvar,dayvar) %>% dplyr::filter_(~BEEP >= first, ~BEEP <= last)%>%
       dplyr::arrange_(idvar,dayvar,beepvar)
   },  list(BEEP = as.name(beepvar))))
-  
+
   
   # Enter NA's:
   augData <- augData %>% dplyr::right_join(allBeeps, by = c(idvar,dayvar,beepvar))
