@@ -2,7 +2,7 @@ Rothmana <-
 function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit.in = 100, maxit.out = 100,
          penalize.diagonal, # if FALSE, penalizes the first diagonal (assumed to be auto regressions), even when ncol(X) != ncol(Y) !
          interceptColumn = 1, # Set to NULL or NA to omit
-         oldVersion = FALSE
+         mimic = "current"
          ){
   # Algorithm 2 of Rothmana, Levinaa & Ji Zhua
   
@@ -10,7 +10,7 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit
   nX <- ncol(X)
  
   if (missing(penalize.diagonal)){
-    if (oldVersion){
+    if (mimic == "0.1.2"){
       penalize.diagonal <- nY != nX
     } else {
       penalize.diagonal <- (nY != nX-1) & (nY != nX ) 
@@ -67,25 +67,32 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit
     stop("Residual covariance matrix is not non-negative definite")
   }
   
-  if (nrow(ZeroIndex)==0){
-    out4 <- suppressWarnings(glasso(WS, rho = 0, trace = FALSE))
+  if (mimic %in% c("0.1.2","0.1.4","0.1.5","0.2")){
+    if (nrow(ZeroIndex)==0){
+      out4 <- suppressWarnings(glasso(WS, rho = 0, trace = FALSE))
+    } else {
+      out4 <- suppressWarnings(glasso(WS, rho = 0, zero = ZeroIndex,
+                                      trace = FALSE))
+    }
+    lik1  <- determinant( out4$wi)$modulus[1]
+    lik2 <- sum(diag( out4$wi%*%WS))
   } else {
-    out4 <- suppressWarnings(glasso(WS, rho = 0, zero = ZeroIndex,trace = FALSE))
+    lik1  <- determinant( kappa )$modulus[1]
+    lik2 <- sum(diag( kappa%*%WS))
   }
-  lik1  = determinant( out4$wi)$modulus[1]
-  lik2 <- sum(diag( out4$wi%*%WS))
 
   pdO = sum(sum(kappa[upper.tri(kappa,diag=FALSE)] !=0))
-  if (oldVersion){
+  if (mimic == "0.1.2"){
     pdB = sum(sum(beta !=0))
   } else {
-    pdB = sum(sum(beta[lambda_mat!=0] !=0)) # CHECK WITH LOURENS
+    pdB = sum(sum(beta[lambda_mat!=0] !=0)) 
   }
   
   LLk <-  (n/2)*(lik1-lik2) 
   LLk0 <-  (n/2)*(-lik2)
   
   EBIC <-  -2*LLk + (log(n))*(pdO +pdB) + (pdO  + pdB)*4*gamma*log(2*nY)
+
   
   ### TRANSPOSE BETA!!!
   return(list(beta=t(beta), kappa=kappa, EBIC = EBIC))

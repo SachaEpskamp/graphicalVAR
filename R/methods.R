@@ -13,12 +13,12 @@ print.graphicalVAR <- function(x, ...){
   "\nOptimal EBIC:",x[['EBIC']],
       
       
-      "\n\nNumber of non-zero Partial Contemporaneous Correlations (PCC):",sum(x[['PCC']][upper.tri(x[['PCC']],diag=FALSE)]==0) ,
+      "\n\nNumber of non-zero Partial Contemporaneous Correlations (PCC):",sum(x[['PCC']][upper.tri(x[['PCC']],diag=FALSE)]!=0) ,
       "\nPCC Sparsity:",mean(x[['PCC']][upper.tri(x[['PCC']],diag=FALSE)]==0) ,
       "\nNumber of PCC tuning parameters tested:",length(unique(x$path$kappa)),
       paste0("\nPCC network stored in ",name,"$PCC"),
       
-      "\n\nNumber of non-zero Directed Contemporaneous Correlations (PDC):",sum(x[['PDC']][upper.tri(x[['PDC']],diag=FALSE)]==0) ,
+      "\n\nNumber of non-zero Partial Directed Correlations (PDC):",sum(x[['PDC']][upper.tri(x[['PDC']],diag=FALSE)]!=0) ,
       "\nPDC Sparsity:",mean(x[['PDC']][upper.tri(x[['PDC']],diag=FALSE)]==0) ,
       "\nNumber of PDC tuning parameters tested:",length(unique(x$path$beta)),
       paste0("\nPDC network stored in ",name,"$PDC"),
