@@ -33,7 +33,8 @@ graphicalVAR <-
     dayvar,
     idvar,
     lags = 1,
-    centerWithin = TRUE
+    centerWithin = TRUE,
+    likelihood = c("unpenalized","penalized") # compute likelihood based on unpenalized (sparseTSCGM 2.3) or penalized (sparseTSCGM 2.5) contemporaneous effects
   ){
     
     mimic <- match.arg(mimic)
@@ -183,7 +184,7 @@ graphicalVAR <-
       } else {
         tryres <- try(Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i], gamma=gamma,maxit.in=maxit.in, maxit.out = maxit.out,
                                penalize.diagonal = penalize.diagonal,
-                               mimic = mimic)  )
+                               mimic = mimic, likelihood = likelihood)  )
         if (is(tryres,"try-error")){
           Estimates[[i]] <- list(beta=matrix(NA,Nvar,Nvar+1), kappa=matrix(NA,Nvar,Nvar), EBIC = Inf,
                                  error = tryres)

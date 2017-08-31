@@ -1,8 +1,7 @@
 Changes in Version 0.2.1:
   o Data is now stored in the output of graphicalVAR
   o Fixed a bug leading to NA in any column to delete a row
-  o Likelihood computation is now based on penalized kappa rather than unpenalized kappa
-
+  o Added 'likelihood' argument to mimic sparseTSCGM 2.5 behavior
 
 Changes in Version 0.2:
     o Added 'tsData' function to prepare data

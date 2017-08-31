@@ -2,9 +2,12 @@ Rothmana <-
 function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit.in = 100, maxit.out = 100,
          penalize.diagonal, # if FALSE, penalizes the first diagonal (assumed to be auto regressions), even when ncol(X) != ncol(Y) !
          interceptColumn = 1, # Set to NULL or NA to omit
-         mimic = "current"
+         mimic = "current",
+         likelihood = c("unpenalized","penalized")
          ){
   # Algorithm 2 of Rothmana, Levinaa & Ji Zhua
+  
+  likelihood <- match.arg(likelihood)
   
   nY <- ncol(Y)
   nX <- ncol(X)
@@ -67,7 +70,7 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit
     stop("Residual covariance matrix is not non-negative definite")
   }
   
-  if (mimic %in% c("0.1.2","0.1.4","0.1.5","0.2")){
+  if (likelihood == "unpenalized"){
     if (nrow(ZeroIndex)==0){
       out4 <- suppressWarnings(glasso(WS, rho = 0, trace = FALSE))
     } else {
