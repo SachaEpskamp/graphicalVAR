@@ -218,13 +218,13 @@ graphicalVAR <-
     # Warnings:
     if (length(lambda_beta)>1){
       if (lambdas$beta[[min]] == min(lambda_beta)){
-        warning("Minimal tuning parameter for beta selected. Try reducing 'lambda_min_beta' argument or (with limited data) increasing 'lambda_min_beta' argument.")
+        message("Minimal tuning parameter for beta selected.")
       }
     }
     
     if (length(lambda_kappa)>1){
       if (lambdas$kappa[[min]] == min(lambda_kappa)){
-        warning("Minimal tuning parameter for kappa selected. Try reducing 'lambda_min_kappa' argument or (with limited data) increasing 'lambda_min_kappa' argument.")
+        message("Minimal tuning parameter for kappa selected.")
       }
     }
     
