@@ -2,18 +2,18 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 beta_ridge_C <- function(X, Y, lambda_beta) {
-    .Call(graphicalVAR_beta_ridge_C, X, Y, lambda_beta)
+    .Call(`_graphicalVAR_beta_ridge_C`, X, Y, lambda_beta)
 }
 
 Beta_C <- function(kappa, beta, X, Y, lambda_beta, lambda_beta_mat, convergence, maxit) {
-    .Call(graphicalVAR_Beta_C, kappa, beta, X, Y, lambda_beta, lambda_beta_mat, convergence, maxit)
+    .Call(`_graphicalVAR_Beta_C`, kappa, beta, X, Y, lambda_beta, lambda_beta_mat, convergence, maxit)
 }
 
 VAR_logLik_C <- function(X, Y, kappa, beta) {
-    .Call(graphicalVAR_VAR_logLik_C, X, Y, kappa, beta)
+    .Call(`_graphicalVAR_VAR_logLik_C`, X, Y, kappa, beta)
 }
 
 LogLik_and_BIC <- function(X, Y, estimates) {
-    .Call(graphicalVAR_LogLik_and_BIC, X, Y, estimates)
+    .Call(`_graphicalVAR_LogLik_and_BIC`, X, Y, estimates)
 }
 

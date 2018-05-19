@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // beta_ridge_C
 NumericMatrix beta_ridge_C(NumericMatrix X, NumericMatrix Y, double lambda_beta);
-RcppExport SEXP graphicalVAR_beta_ridge_C(SEXP XSEXP, SEXP YSEXP, SEXP lambda_betaSEXP) {
+RcppExport SEXP _graphicalVAR_beta_ridge_C(SEXP XSEXP, SEXP YSEXP, SEXP lambda_betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,7 +21,7 @@ END_RCPP
 }
 // Beta_C
 NumericMatrix Beta_C(NumericMatrix kappa, NumericMatrix beta, NumericMatrix X, NumericMatrix Y, double lambda_beta, NumericMatrix lambda_beta_mat, double convergence, int maxit);
-RcppExport SEXP graphicalVAR_Beta_C(SEXP kappaSEXP, SEXP betaSEXP, SEXP XSEXP, SEXP YSEXP, SEXP lambda_betaSEXP, SEXP lambda_beta_matSEXP, SEXP convergenceSEXP, SEXP maxitSEXP) {
+RcppExport SEXP _graphicalVAR_Beta_C(SEXP kappaSEXP, SEXP betaSEXP, SEXP XSEXP, SEXP YSEXP, SEXP lambda_betaSEXP, SEXP lambda_beta_matSEXP, SEXP convergenceSEXP, SEXP maxitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -39,7 +39,7 @@ END_RCPP
 }
 // VAR_logLik_C
 double VAR_logLik_C(NumericMatrix X, NumericMatrix Y, NumericMatrix kappa, NumericMatrix beta);
-RcppExport SEXP graphicalVAR_VAR_logLik_C(SEXP XSEXP, SEXP YSEXP, SEXP kappaSEXP, SEXP betaSEXP) {
+RcppExport SEXP _graphicalVAR_VAR_logLik_C(SEXP XSEXP, SEXP YSEXP, SEXP kappaSEXP, SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -53,7 +53,7 @@ END_RCPP
 }
 // LogLik_and_BIC
 List LogLik_and_BIC(NumericMatrix X, NumericMatrix Y, List estimates);
-RcppExport SEXP graphicalVAR_LogLik_and_BIC(SEXP XSEXP, SEXP YSEXP, SEXP estimatesSEXP) {
+RcppExport SEXP _graphicalVAR_LogLik_and_BIC(SEXP XSEXP, SEXP YSEXP, SEXP estimatesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -63,4 +63,17 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(LogLik_and_BIC(X, Y, estimates));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_graphicalVAR_beta_ridge_C", (DL_FUNC) &_graphicalVAR_beta_ridge_C, 3},
+    {"_graphicalVAR_Beta_C", (DL_FUNC) &_graphicalVAR_Beta_C, 8},
+    {"_graphicalVAR_VAR_logLik_C", (DL_FUNC) &_graphicalVAR_VAR_logLik_C, 4},
+    {"_graphicalVAR_LogLik_and_BIC", (DL_FUNC) &_graphicalVAR_LogLik_and_BIC, 3},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_graphicalVAR(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

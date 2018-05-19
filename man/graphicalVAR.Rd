@@ -13,8 +13,9 @@ graphicalVAR(data, nLambda = 50, verbose = TRUE, gamma = 0.5, scale
                  maxit.out = 100, deleteMissings = TRUE,
                  penalize.diagonal = TRUE, lambda_min_kappa = 0.05,
                  lambda_min_beta = lambda_min_kappa, mimic =
-                 c("current", "0.1.2", "0.1.4", "0.1.5"), vars,
-                 beepvar, dayvar, idvar, centerWithin = TRUE)
+                 c("current", "0.1.2", "0.1.4", "0.1.5", "0.2"), vars,
+                 beepvar, dayvar, idvar, lags = 1, centerWithin = TRUE,
+                 likelihood = c("unpenalized", "penalized"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -74,6 +75,12 @@ String indicating the subject ID
 }
 \item{centerWithin}{
 Logical, should subject data be within-person centered before estimating fixed effects?
+}
+\item{lags}{
+Vector of lags to be used
+}
+\item{likelihood}{
+Should likelihood be computed based on penalized contemporaneous matrix or unpenalized contemporaneous matrix. Set to \code{"penalized"} to mimic version 2.5 and later of \code{sparseTSCGM}.
 }
 }
 \details{
