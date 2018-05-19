@@ -1,3 +1,8 @@
+Changes in Version 0.2.2:
+  o Fixed a CRAN warning
+  o Added 'lags' and 'likelihood' argments to graphicalVAR
+  o Fixed message about deprecated functions
+
 Changes in Version 0.2.1:
   o Data is now stored in the output of graphicalVAR
   o Fixed a bug leading to NA in any column to delete a row

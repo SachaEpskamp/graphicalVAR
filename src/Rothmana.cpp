@@ -120,7 +120,7 @@ double lambda_beta, NumericMatrix lambda_beta_mat, double convergence, int maxit
     }
     
     it++;
-  } while (it < maxit & criterium > (convergence * ridgecriterium));
+  } while (it < maxit && criterium > (convergence * ridgecriterium));
   
   if (it >= maxit){
     Rcpp::Rcout << "\nModel did NOT converge in inner loop";

@@ -73,6 +73,9 @@ String indicating assessment day. Adding this argument makes sure that the first
   \item{idvar}{
 String indicating the subject ID
 }
+\item{lags}{
+Vector of lags to include
+}
 \item{centerWithin}{
 Logical, should subject data be within-person centered before estimating fixed effects?
 }
