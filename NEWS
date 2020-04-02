@@ -1,3 +1,6 @@
+o Changes in version 0.2.3
+  o Fixed an error due to tibble update
+
 Changes in Version 0.2.2:
   o Fixed a CRAN warning
   o Added 'lags' and 'likelihood' argments to graphicalVAR

@@ -46,7 +46,9 @@ tsData <- function(data,
   data <- data[,c(vars,idvar,dayvar,beepvar)]
   
   # Center and scale data:
-  data[,vars] <- scale(data[,vars], TRUE, scale)
+  for (v in vars){
+    data[,v] <- as.numeric(scale(data[,v], TRUE, scale))
+  }
   
   # Obtain person specific means:
   MeansData <- data %>% dplyr::group_by_(idvar) %>% dplyr::summarise_at(funs(mean(.,na.rm=TRUE)),.vars = vars)
