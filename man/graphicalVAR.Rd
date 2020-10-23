@@ -146,6 +146,7 @@ Data <- graphicalVARsim(100,Mod$beta,Mod$kappa)
 # Estimate model:
 Res <- graphicalVAR(Data, gamma = 0, nLambda = 10)
 
+\donttest{
 # Plot results:
 layout(t(1:2))
 plot(Mod, "PCC", layout = "circle")
@@ -153,4 +154,5 @@ plot(Res, "PCC", layout = "circle")
 
 plot(Mod, "PDC", layout = "circle")
 plot(Res, "PDC", layout = "circle")
+}
 }
