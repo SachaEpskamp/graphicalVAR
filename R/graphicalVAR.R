@@ -22,7 +22,11 @@ graphicalVAR <-
     gamma = 0.5,
     scale = TRUE,
     lambda_beta,
-    lambda_kappa, maxit.in = 100, maxit.out = 100,
+    lambda_kappa, 
+    regularize_mat_beta,
+    regularize_mat_kappa,
+    
+    maxit.in = 100, maxit.out = 100,
     deleteMissings = TRUE,
     penalize.diagonal = TRUE,
     lambda_min_kappa = 0.05,
@@ -86,8 +90,7 @@ graphicalVAR <-
     
     Nvar <- ncol(data_c)
     Ntime <- nrow(data_c)
-    
-    
+
     # Delete missing rows:
     if (any(is.na(data_c)) || any(is.na(data_l))){
       
@@ -182,7 +185,8 @@ graphicalVAR <-
         
         Estimates[[i]] <- list(beta = beta, kappa = kappa, EBIC = EBIC)
       } else {
-        tryres <- try(Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i], gamma=gamma,maxit.in=maxit.in, maxit.out = maxit.out,
+        tryres <- try(Rothmana(data_l, data_c, lambdas$beta[i],lambdas$kappa[i],     regularize_mat_beta=regularize_mat_beta,
+                               regularize_mat_kappa=regularize_mat_kappa, gamma=gamma,maxit.in=maxit.in, maxit.out = maxit.out,
                                penalize.diagonal = penalize.diagonal,
                                mimic = mimic, likelihood = likelihood)  )
         if (is(tryres,"try-error")){

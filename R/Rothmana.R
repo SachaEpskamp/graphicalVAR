@@ -1,5 +1,5 @@
 Rothmana <-
-function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit.in = 100, maxit.out = 100,
+function(X, Y, lambda_beta, lambda_kappa, regularize_mat_beta, regularize_mat_kappa, convergence = 1e-4, gamma = 0.5, maxit.in = 100, maxit.out = 100,
          penalize.diagonal, # if FALSE, penalizes the first diagonal (assumed to be auto regressions), even when ncol(X) != ncol(Y) !
          interceptColumn = 1, # Set to NULL or NA to omit
          mimic = "current",
@@ -20,19 +20,37 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit
     }
   }
   
-  lambda_mat <- matrix(lambda_beta,nX, nY)
-  if (!penalize.diagonal){
-    if (nY == nX){
-      add <- 0
-    } else if (nY == nX - 1){
-      add <- 1
-    } else {
-      stop("Beta is not P x P or P x P+1, cannot detect diagonal.")
+  # Add regularization matrix:
+  if (missing(regularize_mat_beta)){
+    lambda_mat <- matrix(lambda_beta,nX, nY)
+    if (!penalize.diagonal){
+      if (nY == nX){
+        add <- 0
+      } else if (nY == nX - 1){
+        add <- 1
+      } else {
+        stop("Beta is not P x P or P x P+1, cannot detect diagonal.")
+      }
+      for (i in 1:min(c(nY,nX))){
+        lambda_mat[i+add,i] <- 0
+      }
     }
-    for (i in 1:min(c(nY,nX))){
-      lambda_mat[i+add,i] <- 0
+  } else {
+    lambda_mat <- lambda_beta * t(regularize_mat_beta)
+    if (nrow(lambda_mat) == nX-1){
+      lambda_mat <- rbind(lambda_mat,FALSE)
+    }
+    if (nrow(lambda_mat) != nX){
+      browser()
+      stop("Number of rows in 'regularize_mat_beta' is incorrect.")
+    }
+    
+    if (ncol(lambda_mat) != nY){
+      stop("Number of columns in 'regularize_mat_beta' is incorrect.")
     }
   }
+  
+  
   if (!is.null(interceptColumn) && !is.na(interceptColumn)){
     lambda_mat[interceptColumn,] <- 0
   }
@@ -48,7 +66,7 @@ function(X, Y, lambda_beta, lambda_kappa, convergence = 1e-4, gamma = 0.5, maxit
 
   repeat{
     it <- it + 1
-    kappa <- Kappa(beta, X, Y, lambda_kappa)
+    kappa <- Kappa(beta, X, Y, lambda_kappa, regularize_mat_kappa)
     beta_old <- beta
     beta <- Beta_C(kappa, beta, X, Y, lambda_beta, lambda_mat, convergence, maxit.in) 
     

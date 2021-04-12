@@ -1,3 +1,6 @@
+o Changes in version 0.2.5
+  o Added arguments regularize_mat_beta and regularize_mat_kappa to only regularize certain edges.
+
 o Changes in version 0.2.3
   o Fixed an error due to tibble update
 
