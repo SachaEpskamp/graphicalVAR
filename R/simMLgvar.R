@@ -67,12 +67,13 @@ simMLgvar <- function(
     trueBetween[lower.tri(trueBetween)] <- t(trueBetween)[lower.tri(trueBetween)]  
     
     # Add diagonal:
-    diag(trueBetween) <- 1
+    # diag(trueBetween) <- 1
+    I <- diag(nrow(trueBetween))
     
     # Check them all:
     evK <- round(eigen(trueKappa)$values,10)
     evB <- round(eigen(trueBeta)$values,10)
-    evBet <- round(eigen(trueBetween)$values,10)
+    evBet <- round(eigen(I - trueBetween)$values,10)
     
     if (all(evBet > 0)){
       break
@@ -81,7 +82,7 @@ simMLgvar <- function(
     
   }
   # Simulate means:
-  Sigma <- cov2cor(solve(trueBetween))
+  Sigma <- cov2cor(solve(I - trueBetween))
   D <- diag(sqrt(betweenVar),nVar)
   Means <- mvtnorm::rmvnorm(nPerson,sigma = D%*%Sigma%*%D)
   
