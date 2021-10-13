@@ -84,7 +84,8 @@ tsData <- function(data,
 
   
   # Enter NA's:
-  augData <- augData %>% dplyr::right_join(allBeeps, by = c(idvar,dayvar,beepvar))
+  augData <- augData %>% dplyr::right_join(allBeeps, by = c(idvar,dayvar,beepvar)) %>%
+    arrange_(dayvar,beepvar)
   
   # Obtain data_c (slice away first row per day/subject):
   data_c <- augData %>% ungroup %>% dplyr::select_(.dots = vars)#  %>% dplyr::group_by_(idvar,dayvar) %>% dplyr::slice(-1)
@@ -103,6 +104,10 @@ tsData <- function(data,
     isNA <- rowSums(is.na(data_c)) > 0 | rowSums(is.na(data_l)) > 0
     data_c <- data_c[!isNA,]
     data_l <- data_l[!isNA,]
+    
+    if (nrow(data_l) == 0 || nrow(data_c) == 0){
+      stop("No data or all data has been deleted")
+    }
   }
 
   # Return datasets:

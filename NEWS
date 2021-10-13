@@ -1,6 +1,7 @@
 o Changes in version 0.2.5
   o Added arguments regularize_mat_beta and regularize_mat_kappa to only regularize certain edges.
   o Fixed a bug in simMLgvar in which the sign of the between-person network was reversed.
+  o Fixed a bug with the beepvar argument
 
 o Changes in version 0.2.3
   o Fixed an error due to tibble update
