@@ -9,13 +9,14 @@ Estimates the graphical VAR (Wild et al., 2010) model through LASSO estimation c
 }
 \usage{
 graphicalVAR(data, nLambda = 50, verbose = TRUE, gamma = 0.5, scale
-                 = TRUE, lambda_beta, lambda_kappa, maxit.in = 100,
-                 maxit.out = 100, deleteMissings = TRUE,
-                 penalize.diagonal = TRUE, lambda_min_kappa = 0.05,
-                 lambda_min_beta = lambda_min_kappa, mimic =
-                 c("current", "0.1.2", "0.1.4", "0.1.5", "0.2"), vars,
-                 beepvar, dayvar, idvar, lags = 1, centerWithin = TRUE,
-                 likelihood = c("unpenalized", "penalized"))
+                   = TRUE, lambda_beta, lambda_kappa,
+                   regularize_mat_beta, regularize_mat_kappa, maxit.in =
+                   100, maxit.out = 100, deleteMissings = TRUE,
+                   penalize.diagonal = TRUE, lambda_min_kappa = 0.05,
+                   lambda_min_beta = lambda_min_kappa, mimic =
+                   c("current", "0.1.2", "0.1.4", "0.1.5", "0.2"), vars,
+                   beepvar, dayvar, idvar, lags = 1, centerWithin = TRUE,
+                   likelihood = c("unpenalized", "penalized"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -39,6 +40,12 @@ An optional vector of lambda_beta values to test. Set \code{lambda_beta = 0} arg
 }
   \item{lambda_kappa}{
 An optional vector of lambda_kappa values to test. Set \code{lambda_beta = 0} argument and \code{lambda_kappa = 0} for unregularized estimation.
+}
+\item{regularize_mat_beta}{
+A logical matrix indicating which elements of the beta matrix should be regularized (experimental).
+}
+\item{regularize_mat_kappa}{
+A logical matrix indicating which elements of the kappa matrix should be regularized (experimental).
 }
   \item{maxit.in}{
 Maximum number of iterations in the inner loop (computing beta)
