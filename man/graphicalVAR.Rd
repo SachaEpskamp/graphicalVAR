@@ -151,9 +151,13 @@ Mod <- randomGVARmodel(4,probKappaEdge = 0.8,probBetaEdge = 0.8)
 Data <- graphicalVARsim(100,Mod$beta,Mod$kappa)
 
 # Estimate model:
-Res <- graphicalVAR(Data, gamma = 0, nLambda = 10)
+Res <- graphicalVAR(Data, gamma = 0, nLambda = 5)
 
-\donttest{
+
+\dontrun{
+# For more precision, run:
+Res <- graphicalVAR(Data, gamma = 0)
+
 # Plot results:
 layout(t(1:2))
 plot(Mod, "PCC", layout = "circle")

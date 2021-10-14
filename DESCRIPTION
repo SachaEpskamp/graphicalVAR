@@ -1,8 +1,11 @@
 Package: graphicalVAR
 Type: Package
 Title: Graphical VAR for Experience Sampling Data
-Version: 0.2.5
-Author: Sacha Epskamp
+Version: 0.3
+Authors@R: c(
+  person("Sacha", "Epskamp", email = "mail@sachaepskamp.com",role = c("aut", "cre")),
+  person("Eren", "Asana", role = c("ctb"))
+  )
 Maintainer: Sacha Epskamp <mail@sachaepskamp.com>
 Description: Estimates within and between time point interactions in experience sampling data, using the Graphical vector autoregression model in combination with regularization. See also Epskamp, Waldorp, Mottus & Borsboom (2018) <doi:10.1080/00273171.2018.1454823>.
 License: GPL (>= 2)

@@ -51,7 +51,7 @@ tsData <- function(data,
   }
   
   # Obtain person specific means:
-  MeansData <- data %>% dplyr::group_by(.data[[idvar]]) %>% dplyr::summarise_at(funs(mean(.,na.rm=TRUE)),.vars = vars)
+  MeansData <- data %>% dplyr::group_by(.data[[idvar]]) %>% dplyr::summarise_at(list(~mean(.,na.rm=TRUE)),.vars = vars)
   
   # Within-person center:
   if (centerWithin){
