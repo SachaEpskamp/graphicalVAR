@@ -1,3 +1,6 @@
+o Changes in Version 0.3.1
+  o Added a warning for duplicate beeps
+
 o Changes in version 0.3
   o Added arguments regularize_mat_beta and regularize_mat_kappa to only regularize certain edges.
   o Fixed a bug in simMLgvar in which the sign of the between-person network was reversed.
