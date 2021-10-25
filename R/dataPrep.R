@@ -66,10 +66,7 @@ tsData <- function(data,
   augData <- data
   
   # Add missing rows for missing beeps
-  # beepsPerDay <-  eval(substitute(dplyr::summarize_(data %>% group_by_(idvar,dayvar), 
-  #                                                   first = ~ min(beepvar,na.rm=TRUE),
-  #                                                   last = ~ max(beepvar,na.rm=TRUE)), 
-  #                                 list(beepvar = as.name(beepvar))))
+
   
   # Check for errors in data:
   beepsummary <- data %>% group_by(.data[[idvar]],.data[[dayvar]],.data[[beepvar]]) %>% tally
@@ -93,10 +90,7 @@ tsData <- function(data,
   names(allBeeps) <- c(idvar,dayvar,beepvar)
   
   # Left join the beeps per day:
-  # allBeeps <- eval(substitute({
-  #   allBeeps %>% dplyr::left_join(beepsPerDay, by = c(idvar,dayvar)) %>% 
-  #     dplyr::group_by_(idvar,dayvar) %>% dplyr::filter_(~BEEP >= first, ~BEEP <= last)%>%
-  #     dplyr::arrange_(idvar,dayvar,beepvar)
+
   # },  list(BEEP = as.name(beepvar))))
   allBeeps <- allBeeps %>% dplyr::left_join(beepsPerDay, by = c(idvar,dayvar)) %>% 
       dplyr::group_by(.data[[idvar]],.data[[dayvar]]) %>% dplyr::filter(.data[[beepvar]] >= .data$first, .data[[beepvar]] <= .data$last)%>%
@@ -116,8 +110,7 @@ tsData <- function(data,
     names(data_lagged) <- paste0(vars,"_lag",l)
     data_lagged
   }))
-  # data_l <- augData %>% dplyr::group_by_(idvar,dayvar) %>% dplyr::slice(-n())
-  
+
   # # Remove rows with missings:
   if (deleteMissings){
     isNA <- rowSums(is.na(data_c)) > 0 | rowSums(is.na(data_l)) > 0
