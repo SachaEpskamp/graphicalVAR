@@ -31,14 +31,15 @@ graphicalVAR <-
     penalize.diagonal = TRUE,
     lambda_min_kappa = 0.05,
     lambda_min_beta = lambda_min_kappa,
-    mimic = c("current","0.1.2","0.1.4","0.1.5","0.2"),
+    mimic = c("current","0.3.2","0.1.2","0.1.4","0.1.5","0.2"),
     vars,
     beepvar,
     dayvar,
     idvar,
     lags = 1,
     centerWithin = TRUE,
-    likelihood = c("unpenalized","penalized") # compute likelihood based on unpenalized (sparseTSCGM 2.3) or penalized (sparseTSCGM 2.5) contemporaneous effects
+    likelihood = c("unpenalized","penalized"), # compute likelihood based on unpenalized (sparseTSCGM 2.3) or penalized (sparseTSCGM 2.5) contemporaneous effects
+    ebic_tol = 1e-4 # Tolerance for detecting minimum EBIC
   ){
     
     mimic <- match.arg(mimic)
@@ -215,9 +216,36 @@ graphicalVAR <-
     if (all(lambdas$ebic==Inf)){
       stop("No model estimated without error")
     }
-    # Which minimal BIC:
-    min <- which.min(lambdas$ebic)
-    Results <- Estimates[[min]]
+    
+    # Select models with tolerance:
+    if (!mimic %in% c("0.3.2","0.1.2","0.1.4","0.1.5","0.2")){
+      
+      # Add ID:
+      lambdas$id <- seq_len(nrow(lambdas))
+      
+      # Find the mimimal EBIC:
+      min_ebic <- min(lambdas$ebic, na.rm=TRUE)
+      
+      # Which are approximately the same:
+      which_all_min <- lambdas$id[abs(lambdas$ebic - min_ebic) < ebic_tol]
+      
+      # which of these have the lowest lambda_kappa?
+      which_also_low_kappa <- lambdas$id[which_all_min][lambdas$kappa[which_all_min] == min(lambdas$kappa[which_all_min], na.rm = TRUE)]
+      
+      # which of these have the lowest lambda_beta?
+      which_also_low_beta <- lambdas$id[which_also_low_kappa][lambdas$beta[which_also_low_kappa] == min(lambdas$beta[which_also_low_kappa], na.rm = TRUE)]
+      
+      # Return this model:
+      min <- which_also_low_beta
+      Results <- Estimates[[min]]
+      
+    } else {
+      # Which minimal BIC:
+      min <- which.min(lambdas$ebic)
+      Results <- Estimates[[min]]
+    }
+    
+
     
     # Warnings:
     if (length(lambda_beta)>1){
