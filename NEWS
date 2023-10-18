@@ -1,6 +1,9 @@
+o Changes in Version 0.3.3
+  o Minor help file fix
+
 o Changes in Version 0.3.2
-  o Added ebic_tol argument for tolerance when comparing EBIC, if two models now have 
-    near identical EBICs the model with the lowest lambda_kappa value is selected, 
+  o Added ebic_tol argument for tolerance when comparing EBIC, if two models now have
+    near identical EBICs the model with the lowest lambda_kappa value is selected,
     followed by the model with the lowest lambda_beta value.
 
 o Changes in Version 0.3.1
