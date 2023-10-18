@@ -103,7 +103,7 @@ In which epsilon_t is a vector of error and is independent between time points b
 
 After estimation, the Beta and Kappa matrices can be standardized as described by Wild et al. (2010). The Kappa matrix can be standardized to partial contemporaneous correlations (PCC) as follows:
 
-PCC(y[i,t], y[j,t]) = - kappa[ij] / sqrt(kappa[ii] kappa[jj]})
+PCC(y[i,t], y[j,t]) = - kappa[ij] / sqrt(kappa[ii] kappa[jj])
 
 Similarly, the beta matrix can be standardized to partial directed correlations (PDC):
 
