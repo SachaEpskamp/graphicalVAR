@@ -22,7 +22,7 @@ graphicalVAR(data, nLambda = 50, verbose = TRUE, gamma = 0.5, scale
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
-A matrix or data frame containing repeated measures (rows) on a set of variables (columns). Must not contain missing data.
+A matrix or data frame containing repeated measures (rows) on a set of variables (columns).
 }
   \item{nLambda}{
 The number of both lambda parameters to test. Defaults to 50, which results in 2500 models to evaluate.
@@ -112,6 +112,8 @@ PDC(y[i,t-1], y[j,t]) = beta[ji] / sqrt( sigma[jj] kappa[ii] + beta[ji]^2 )
 In which sigma is the inverse of kappa. Note that this process transposes the beta matrix. This is done because in representing a directed network it is typical to let rows indicate the node of origin and columns the node of destination.
 
 Set \code{lambda_beta = 0} argument and \code{lambda_kappa = 0} for unregularized estimation.
+
+Missing data are removed listwise after augmenting the dataset. This means that if there is a missing response at time t, the row corresponding to time t-1 and time t and the row corresponding to time t and time t+1 are removed.
 }
 \value{
 A \code{graphicalVAR} object, which is a list containing:
