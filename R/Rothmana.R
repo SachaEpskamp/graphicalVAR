@@ -38,7 +38,7 @@ function(X, Y, lambda_beta, lambda_kappa, regularize_mat_beta, regularize_mat_ka
   } else {
     lambda_mat <- lambda_beta * t(regularize_mat_beta)
     if (nrow(lambda_mat) == nX-1){
-      lambda_mat <- rbind(lambda_mat,FALSE)
+      lambda_mat <- rbind(FALSE,lambda_mat)
     }
     if (nrow(lambda_mat) != nX){
       browser()

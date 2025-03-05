@@ -1,3 +1,6 @@
+o Changes in Version 0.4
+  o Fixed a bug when using 'regularize_mat_beta' without specifying the intercepts
+
 o Changes in Version 0.3.4
     o Minor help file fix
 
