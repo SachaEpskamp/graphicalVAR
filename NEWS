@@ -1,3 +1,10 @@
+o Changes in development version 0.4.1.9000
+  o Added scgvar() for subgroup chain graphical VAR estimation using the current
+    graphicalVAR estimator, signed network similarity, and walktrap clustering.
+  o Added validation, deterministic threshold search, explicit subject-ID mapping,
+    structured results, optional file export, documentation, and regression tests.
+  o Existing estimation, simulation, and S3 functions are unchanged.
+
 o Changes in Version 0.4
   o Fixed a bug when using 'regularize_mat_beta' without specifying the intercepts
 

@@ -1,0 +1,269 @@
+SCGVAR: subgroup chain graphical VAR
+
+Purpose and workflow
+--------------------
+scgvar() estimates a pooled graphical VAR and one graphical VAR per selected
+subject, clusters subjects by the signs and presence of their network edges,
+and refits a pooled graphical VAR in each discovered subgroup. The underlying
+estimation uses graphicalVAR's current implementation, including its current
+EBIC tie handling and optional regularization masks. SCGVAR does not change
+graphicalVAR(), mlGraphicalVAR(), their methods, or the native estimation code.
+
+The function has no file or plotting side effects by default. Assign its result:
+
+  fit = scgvar(data, vars = c("V1", "V2", "V3"), idvar = "id",
+               beepvar = "beep", dayvar = "day", nLambda = 10)
+
+Input and time boundaries
+-------------------------
+Provide a matrix or data frame, at least two numeric measurement columns, and
+a subject ID column. Selected columns cannot contain NA; measurement columns
+must be finite. ID and day columns must contain finite atomic values. Every
+subject must have nonconstant variables and at least three usable lag-1 pairs.
+That minimum only catches unusable input; it does not establish statistical
+adequacy. Reliable estimation generally requires substantially more information
+and depends on dimensionality, dynamics, signal strength, and regularization.
+
+The optional beep column uses nonnegative integer assessment numbers. Explicit
+beep gaps are respected: no lag is formed across a missing assessment. Explicit
+day boundaries also break lag pairs. Duplicate subject/day/beep combinations are
+rejected. If beepvar is NULL, input row order within each subject and day defines
+consecutive assessments; omitted observations cannot then be inferred. If dayvar
+is NULL, each subject's series is treated as a single day. SCGVAR supports lag 1
+only. Missing responses in selected input columns remain unsupported, even
+though the underlying package can delete missing rows.
+
+All subjects are clustered by default. subjectNetworks can instead name at least
+two observed IDs. The full input sample still contributes to pooled fixed
+effects and the optional fixed-edge removal mask; only selected subjects get
+individual fits, membership, and subgroup refits. Selection order is preserved.
+Use fit$membership$IDs to join external data; never infer identity from sorted
+IDs or integer cluster labels. Numeric, character, and factor IDs retain their
+type in the membership data frame. The subject fit lists use character ID names.
+
+Estimation and tuning
+----------------------
+Pooled and subject estimation follows mlGraphicalVAR's preparation: the full
+data are centered and optionally standardized, with optional within-person
+centering for fixed effects. Individual rows are taken from that prepared data
+and prepared again for individual estimation, as in mlGraphicalVAR. Subgroup
+models are refitted from their original input rows.
+
+lambda_min_kappa_fixed and lambda_min_beta_fixed control the minimum-to-maximum
+penalty ratios for both pooled and subgroup fixed fits. lambda_min_kappa and
+lambda_min_beta control individual fits. Ratios must lie strictly in (0, 1),
+avoiding degenerate duplicate grids at a ratio of 1. gamma = 0
+uses BIC; the default gamma = 0.5 uses EBIC. maxit.in defaults to 100 and is
+forwarded to every fit. Additional current graphicalVAR controls can be passed
+by exact names, including nLambda, lambda_beta, lambda_kappa, maxit.out,
+regularize_mat_beta, regularize_mat_kappa, likelihood, mimic, and ebic_tol.
+Explicit lambda vectors must contain distinct, finite, nonnegative values;
+they replace automatically generated tuning grids, as in graphicalVAR.
+nLambda must be one positive integer. Unknown, abbreviated,
+unnamed, or duplicate names in ... fail explicitly. lags must equal 1.
+
+The small nLambda in the example is a practical integration-test grid. For a
+substantive analysis, inspect sensitivity to tuning resolution and ranges; the
+default nLambda = 50 in graphicalVAR evaluates a 50 by 50 grid for each fit.
+SCGVAR reports failed or nonfinite subject fits with the subject ID instead of
+silently converting failures into absent edges.
+
+How network similarity is computed
+-----------------------------------
+For each pair of subjects, count all PCC entries that are nonzero in both and
+have the same sign, then add the count of all PDC entries whose absolute values
+are strictly greater than 0.01 in both and have the same sign. Shared zeros do
+not contribute. Set the subject-similarity diagonal to zero.
+
+This preserves the archived weighting: because PCC is symmetric and the full
+matrix is counted, each contemporaneous edge contributes twice. Each directed
+PDC edge contributes once; autoregressive diagonal entries are included. The
+result is a signed edge-presence count, not a correlation between networks,
+a distance, or a magnitude-weighted similarity.
+
+elim.groups = TRUE first removes individual entries at every nonzero position
+of the pooled fixed PCC/PDC network, regardless of sign. This corrects a bug in
+the archive, which retained fixed-edge positions despite documenting removal.
+Because masking changes the information used for clustering, it can produce an
+all-zero similarity matrix; SCGVAR then stops with an informative error.
+
+Community search and interpretation
+------------------------------------
+With search = TRUE, compute type-7 quantiles q01 and q99 of the upper triangle
+of the raw similarity matrix. Enumerate all distinct graphs obtainable by
+zeroing weights <= a threshold in [q01, q99]. Each nonempty candidate is passed
+to weighted walktrap with four steps. If nclust is specified, use its dendrogram
+cut; otherwise use walktrap's selected membership.
+
+For each community, divide its total weight leading outside the community by
+its total degree. Assign an escape fraction of 1 to a zero-degree community.
+The candidate score is 1 minus the unweighted mean of these fractions across
+communities. The highest score wins; ties within 1e-12 choose the lower
+threshold. This is a conductance-based objective, not modularity maximization
+across thresholds. Modularity is also reported for the actual chosen partition.
+One connected community has no outgoing weight and can legitimately be favored.
+
+The enumeration replaces a continuous optimizer applied to a discrete objective
+in the archive. It evaluates every attainable graph on the original quantile
+interval deterministically, but its answer need not equal the old optimizer's.
+The graph and selected threshold are exposed in the result for inspection.
+
+An empty graph or a graph with more connected components than requested nclust
+is infeasible. If all thresholded candidates are infeasible, the original raw
+similarity graph is tried and, if feasible, used with a warning and
+fit$clustering$fallback = TRUE. If that graph is also infeasible, the function
+errors. It never adds hidden edges to force a requested count. An all-zero raw
+similarity matrix is always an error. A requested cluster count is a constraint,
+not evidence that this number of subgroups was discovered.
+
+With search = FALSE, zeros stay zero; positive weights become their original
+value minus the minimum positive value plus .Machine$double.eps. Weighted
+walktrap then uses this graph. Equal positive similarities therefore remain
+tiny positive weights rather than disappearing. The same nclust feasibility
+requirements apply.
+
+Results and current graphicalVAR APIs
+--------------------------------------
+fit$membership is a data frame with IDs and integer membership. Labels are
+renumbered consecutively in first-occurrence order and have no substantive
+meaning. Compare partitions using ID-matched labels and a label-invariant
+metric such as adjusted Rand index.
+
+fit$similarity is the raw similarity matrix. fit$sim.mat is the actual clustering
+adjacency. fit$clustering contains search, threshold, score, modularity, fallback,
+candidates (threshold and score columns), and nclust. A threshold of NA means
+none was selected; an NA candidate score marks an infeasible graph.
+
+fit$group.output contains the pooled and selected individual fits:
+
+  pooled = fit$group.output$fixedResults
+  person = fit$group.output$subjectResults[[1]]
+  subgroup = fit$subgroup.outputs[[1]]$fixedResults
+
+These are native graphicalVAR objects. Use the package's existing methods:
+
+  print(pooled)
+  summary(pooled)
+  plot(pooled)
+
+The enclosing lists preserve fixedPCC/fixedPDC and subjectPCC/subjectPDC fields,
+plus fixedbeta/fixedkappa and subjectbeta/subjectkappa convenience fields.
+subjectResults also has the historical upstream alias subjecResults. sample.ids
+lists all subjects contributing to each pooled fit; subject.ids lists the
+individuals actually fitted. In group.output, ids follows the selected subject
+order. Subgroup outputs contain pooled fits and empty individual lists; their
+ids and sample.ids identify subgroup members and subject.ids is empty.
+Individuals are not unnecessarily refitted after membership is assigned.
+
+A beta matrix has outcome rows, an intercept column named "1", and predictor
+columns named paste0(vars, "_lag1"). Thus beta["V2", "V1_lag1"] is the
+coefficient for V1 at the preceding assessment predicting V2 now. PDC uses the
+network convention with origin rows and destination columns, so the same
+direction appears at PDC["V1", "V2"]. Do not rename all beta columns to vars:
+that would overlook the intercept and misidentify coefficients.
+
+Optional between-subject networks
+----------------------------------
+btwnNetworks defaults to FALSE. When TRUE, EBICglasso estimates a network from
+subject means for the pooled sample AND every detected subgroup. Each requires
+more subjects than measurement variables and positive-definite mean covariance.
+A small or singular subgroup causes an informative error, rather than returning
+a fabricated between-network. Results are available in betweenNet and
+betweenResults. lambda_min_glasso controls the penalty ratio. The requirement
+is checked separately for the pooled sample and each subgroup.
+
+Explicit CSV and PDF export
+---------------------------
+Set dir to a parent directory to create its new "graphical VAR" subdirectory.
+An existing subdirectory of that name causes an error before estimation. The
+parent may already exist; select a fresh parent for each result set. All fits
+complete before export starts. Export writes into a temporary sibling directory
+and renames it to "graphical VAR" only after every CSV and PDF succeeds.
+Filesystem or plotting failures remove the staged files and close opened PDF
+devices; incomplete results are not published as the final output directory.
+
+Export includes:
+
+  Group Solution/       fixedPCC, fixedPDC, fixedbeta, fixedkappa CSVs;
+                        Group Plot.pdf; BTW Net.csv when estimated.
+  Individual Solutions/ SubjN PCC/PDC/beta/kappa CSVs; Subject Index.csv
+                        maps file index N to actual IDs. Individual PDFs
+                        are added only with indplot = TRUE.
+  Subgroup Solutions/   Group Membership.csv; Subgroup N directories
+                        with fixed matrices, Subgroup Plot.pdf, and
+                        optional BTW Net.csv.
+  sim.mat.test.csv       raw similarity, with subject ID labels.
+  sim.mat.csv            actual clustering adjacency, with subject ID labels.
+  threshold-search.csv  candidate thresholds and scores.
+  clustering.csv        chosen graph diagnostics and subgroup count.
+  Subgroups Plot.pdf    chosen graph and returned membership.
+
+Fixed/individual matrix and Group Membership CSVs retain the archive's
+headerless layout. For labeled, typed data prefer the returned R object;
+the example optionally saves that complete object as RDS. Exported beta CSVs
+include the intercept as their first column. Matrix order follows vars.
+PDF devices are closed after plotting and the caller's active device and
+graphics parameters are preserved. dir = NULL opens no graphics device and
+writes no files. indplot = TRUE requires dir. returnResults = FALSE is allowed
+only when dir is supplied, so results are not discarded without export.
+
+Migration from graphicalVAR_0.2.5.tar.gz
+---------------------------------------
+The selected local archive was packaged May 26, 2026 and internally identifies
+itself as version 0.2.4.9000. This addition is ported onto graphicalVAR 0.4.1.
+Existing upstream functions are preserved; only SCGVAR-specific functions and
+supporting documentation/tests are added.
+
+Intentional changes from the archived SCGVAR include:
+
+* dir defaults to NULL, replacing automatic writes into the working directory.
+* membership is a typed data frame; subject identity and selected order are
+  kept consistent with individual fit lists.
+* Failed fits, invalid data, unsupported options, and infeasible cluster cuts
+  are reported explicitly before export.
+* maxit.in and subgroup fixed-effect penalty ratios are honored.
+* elim.groups removes fixed-edge positions, correcting the reversed mask.
+* Deterministic graph enumeration replaces nloptr optimization; it can select
+  a different partition. The original-graph fallback is warned and recorded.
+* btwnNetworks works and validates pooled and subgroup identifiability.
+* Native graphicalVAR results support the package's existing plot/summary
+  methods and current beta-column conventions.
+* Output no longer overwrites existing results, leaks graphics state, or
+  scatters similarity files outside its result directory.
+
+redo = TRUE, mlgvclust = FALSE, and a non-NULL g.ID were experimental or unused
+archive options. They now produce explicit errors. Their default values remain
+accepted to make older calls easier to migrate. subjectNetworks = FALSE is
+invalid because clustering requires individual networks. Unknown arguments in
+... are not silently ignored.
+
+Reproducible test case
+----------------------
+The installed examples/scgvar-example.R simulates two stationary VAR(1)
+populations with opposite cross-lag signs, fits SCGVAR without forcing a cluster
+count, and reports the detected count, ID-matched contingency table, adjusted
+Rand index, and subgroup coefficient estimates. It uses a fixed random seed and
+a small tuning grid for reasonable runtime. The independent truth table is
+never passed to estimation.
+
+Run without file output:
+
+  source(system.file("examples", "scgvar-example.R", package = "graphicalVAR"))
+
+From a shell, optionally provide a fresh output directory:
+
+  Rscript scgvar-example.R path/to/new-run
+
+The optional export also saves input data, the truth table, fitted R object,
+membership comparison, and a concise verification summary. The example reports
+actual recovery and stops only for structural/finite-estimate failures; it
+does not present the imposed answer as a discovery. Sampling variability and
+software versions can affect recovery. Unit and baseline regression tests
+provide complementary evidence of numerical and API compatibility.
+
+On the tested R 4.4.2 Windows installation, the supplied seed and six-value
+tuning grid recovered two groups without nclust, correctly separated all 12
+subjects (adjusted Rand index 1), and did not use the graph fallback. The pooled
+subgroup coefficients had the expected opposite signs. These results are a
+record of the supplied example run, not an enforced output or an accuracy claim
+for other data. Both the no-export and explicit-export runs were exercised.

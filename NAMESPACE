@@ -1,6 +1,7 @@
 useDynLib(graphicalVAR, .registration = TRUE)
 export(simMLgvar)
 export(mlGraphicalVAR)
+export(scgvar)
 export(graphicalVAR)
 export(graphicalVARsim)
 importFrom(rlang, .data)
